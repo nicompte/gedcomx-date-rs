@@ -1,0 +1,19 @@
+[package]
+name = "gedcomx_date"
+version = "0.0.1"
+authors = ["Nicolas Barbotte <nicolas@barbotte.net>"]
+
+description = "Gedcomx Date Parser"
+
+license = "MIT"
+readme = "README.md"
+
+[dependencies]
+nom = "1.2.0"
+
+clippy = {version = "~0.0.46", optional = true}
+
+[features]
+default = []
+dev = ["clippy"]
+bench = []

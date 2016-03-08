@@ -1,0 +1,14 @@
+dependencies:
+  post:
+    - git config --global user.email nicolas@barbotte.net
+    - git config --global user.name "Nicolas Barbotte"
+    - curl -sf -L https://static.rust-lang.org/rustup.sh | sh /dev/stdin --channel=nightly --yes
+test:
+  override:
+    - eval `ssh-agent` && ssh-add /home/ubuntu/.ssh/id_circleci_github && cargo test
+
+deployment:
+  docs:
+    branch: master
+    commands:
+      - cargo doc && git fetch origin gh-pages && git checkout gh-pages && (git mv doc doc-$(git describe --always master^) || rm -rf doc) && mv target/doc/ ./doc && git add -A ./doc* && git commit -m 'update docs' && git push origin gh-pages
