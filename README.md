@@ -1,7 +1,7 @@
 # gedcomx-date-rs
 
 Gecomx date parsing written with [nom](https://github.com/Geal/nom) in [rust](https://rust-lang.org).
-See documentation [here](http://barbotte.net/gedcomx-date-rs).
+See documentation [here](http://barbotte.net/gedcomx-date-rs/doc/gedcomx_date).
 
 ```rust
 let date = gedcomx_date::parse("2015-06-26T16:43:23+02:00").unwrap();
