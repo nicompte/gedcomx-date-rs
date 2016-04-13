@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
+    
 
     
     
@@ -43,10 +44,10 @@
 
     <section id='main' class="content macro">
 <h1 class='fqn'><span class='in-band'><a href='index.html'>nom</a>::<wbr><a class='macro' href=''>escaped!</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-1775' class='srclink' href='../src/nom/bytes.rs.html.html#222-232' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-1806' class='srclink' href='../src/nom/bytes.rs.html#222-232' title='goto source code'>[src]</a></span></h1>
 <pre class='rust macro'>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>escaped</span> {
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>i</span>:<span class='ident'>expr</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>submac</span>:<span class='macro'>ident</span><span class='macro'>!</span>( $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>args</span>:<span class='ident'>tt</span>)<span class='op'>*</span> ), <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>control_char</span>: <span class='ident'>expr</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rest</span>:<span class='ident'>tt</span>)<span class='op'>+</span>) <span class='op'>=&gt;</span> { ... };
@@ -55,7 +56,7 @@
 <div class='docblock'><p><code>escaped!(&amp;[T] -&gt; IResult&lt;&amp;[T], &amp;[T]&gt;, T, &amp;[T] -&gt; IResult&lt;&amp;[T], &amp;[T]&gt;) =&gt; &amp;[T] -&gt; IResult&lt;&amp;[T], &amp;[T]&gt;</code>
 matches a byte string with escaped characters.</p>
 
-<p>The first argument parses the normal characters, the second argument is the control character (like <code>\</code> in most languages),
+<p>The first argument matches the normal characters (it must not accept the control character), the second argument is the control character (like <code>\</code> in most languages),
 the third argument matches the escaped characters</p>
 
 <pre class='rust rust-example-rendered'>

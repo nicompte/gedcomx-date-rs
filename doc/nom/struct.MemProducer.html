@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
+    
 
     
     
@@ -43,10 +44,10 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>nom</a>::<wbr><a class='struct' href=''>MemProducer</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-1422' class='srclink' href='../src/nom/stream.rs.html.html#119-124' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-1458' class='srclink' href='../src/nom/stream.rs.html#119-124' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct MemProducer&lt;'x&gt; {
     // some fields omitted
 }</pre><div class='docblock'><p>A MemProducer generates values from an in memory byte buffer</p>
@@ -54,7 +55,7 @@
 <p>it generates data by chunks, and keeps track of how much was consumed.
 It can receive messages of type <code>Move</code> to handle consumption and seeking</p>
 </div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl&lt;'x&gt; <a class='struct' href='../nom/struct.MemProducer.html' title='nom::MemProducer'>MemProducer</a>&lt;'x&gt;</code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(buffer: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'x [</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, chunk_size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='../nom/struct.MemProducer.html' title='nom::MemProducer'>MemProducer</a></code></h4>
-</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;'x, 'b&gt; <a class='trait' href='../nom/trait.Producer.html' title='nom::Producer'>Producer</a>&lt;'b, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'x [</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, <a class='enum' href='../nom/enum.Move.html' title='nom::Move'>Move</a>&gt; for <a class='struct' href='../nom/struct.MemProducer.html' title='nom::MemProducer'>MemProducer</a>&lt;'x&gt;</code></h3><div class='impl-items'><h4 id='method.apply' class='method'><code>fn <a href='../nom/trait.Producer.html#method.apply' class='fnname'>apply</a>&lt;'a, O, E&gt;(&amp;'b mut self, consumer: &amp;'a mut <a class='trait' href='../nom/trait.Consumer.html' title='nom::Consumer'>Consumer</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'x [</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, O, E, <a class='enum' href='../nom/enum.Move.html' title='nom::Move'>Move</a>&gt;) -&gt; &amp;'a <a class='enum' href='../nom/enum.ConsumerState.html' title='nom::ConsumerState'>ConsumerState</a>&lt;O, E, <a class='enum' href='../nom/enum.Move.html' title='nom::Move'>Move</a>&gt;</code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;'x, 'b&gt; <a class='trait' href='../nom/trait.Producer.html' title='nom::Producer'>Producer</a>&lt;'b, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'x [</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, <a class='enum' href='../nom/enum.Move.html' title='nom::Move'>Move</a>&gt; for <a class='struct' href='../nom/struct.MemProducer.html' title='nom::MemProducer'>MemProducer</a>&lt;'x&gt;</code></h3><div class='impl-items'><h4 id='method.apply' class='method'><code>fn <a href='../nom/trait.Producer.html#tymethod.apply' class='fnname'>apply</a>&lt;'a, O, E&gt;(&amp;'b mut self, consumer: &amp;'a mut <a class='trait' href='../nom/trait.Consumer.html' title='nom::Consumer'>Consumer</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'x [</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, O, E, <a class='enum' href='../nom/enum.Move.html' title='nom::Move'>Move</a>&gt;) -&gt; &amp;'a <a class='enum' href='../nom/enum.ConsumerState.html' title='nom::ConsumerState'>ConsumerState</a>&lt;O, E, <a class='enum' href='../nom/enum.Move.html' title='nom::Move'>Move</a>&gt;</code></h4>
 <h4 id='method.run' class='method'><code>fn <a href='../nom/trait.Producer.html#method.run' class='fnname'>run</a>&lt;'a, O, E: 'b&gt;(&amp;'b mut self, consumer: &amp;'a mut <a class='trait' href='../nom/trait.Consumer.html' title='nom::Consumer'>Consumer</a>&lt;I, O, E, M&gt;) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;O&gt;</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>

@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
+    
 
     
     
@@ -43,10 +44,10 @@
 
     <section id='main' class="content trait">
 <h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>nom</a>::<wbr><a class='trait' href=''>Consumer</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-1382' class='srclink' href='../src/nom/stream.rs.html.html#52-59' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-1418' class='srclink' href='../src/nom/stream.rs.html#52-59' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Consumer&lt;I, O, E, M&gt; {
     fn <a href='#tymethod.handle' class='fnname'>handle</a>(&amp;mut self, input: <a class='enum' href='../nom/enum.Input.html' title='nom::Input'>Input</a>&lt;I&gt;) -&gt; &amp;<a class='enum' href='../nom/enum.ConsumerState.html' title='nom::ConsumerState'>ConsumerState</a>&lt;O, E, M&gt;;
     fn <a href='#tymethod.state' class='fnname'>state</a>(&amp;self) -&gt; &amp;<a class='enum' href='../nom/enum.ConsumerState.html' title='nom::ConsumerState'>ConsumerState</a>&lt;O, E, M&gt;;
@@ -64,8 +65,8 @@
     <li><code>impl&lt;'a, R, S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, T, E: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, M: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Fn.html' title='core::ops::Fn'>Fn</a>(S) -&gt; T, C: <a class='trait' href='../nom/trait.Consumer.html' title='nom::Consumer'>Consumer</a>&lt;R, S, E, M&gt;&gt; <a class='trait' href='../nom/trait.Consumer.html' title='nom::Consumer'>Consumer</a>&lt;R, T, E, M&gt; for <a class='struct' href='../nom/struct.MapConsumer.html' title='nom::MapConsumer'>MapConsumer</a>&lt;'a, C, R, S, T, E, M, F&gt;</code></li>
 <li><code>impl&lt;'a, 'b, R, S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, E: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, M: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, C1: <a class='trait' href='../nom/trait.Consumer.html' title='nom::Consumer'>Consumer</a>&lt;R, S, E, M&gt;, C2: <a class='trait' href='../nom/trait.Consumer.html' title='nom::Consumer'>Consumer</a>&lt;S, T, E, M&gt;&gt; <a class='trait' href='../nom/trait.Consumer.html' title='nom::Consumer'>Consumer</a>&lt;R, T, E, M&gt; for <a class='struct' href='../nom/struct.ChainConsumer.html' title='nom::ChainConsumer'>ChainConsumer</a>&lt;'a, 'b, C1, C2, R, S, T, E, M&gt;</code></li>
 </ul><script type="text/javascript" async
-                              src="../implementors/nom/trait.Consumer.js">
-                      </script></section>
+                         src="../implementors/nom/trait.Consumer.js">
+                 </script></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>

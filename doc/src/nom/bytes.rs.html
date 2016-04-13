@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/ubuntu/.cargo/registry/src/github.com-88ac128001ac3a9a/nom-1.2.1/src/bytes.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/ubuntu/.cargo/registry/src/github.com-88ac128001ac3a9a/nom-1.2.2/src/bytes.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>bytes.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -1054,6 +1055,16 @@
 <span id="1011">1011</span>
 <span id="1012">1012</span>
 <span id="1013">1013</span>
+<span id="1014">1014</span>
+<span id="1015">1015</span>
+<span id="1016">1016</span>
+<span id="1017">1017</span>
+<span id="1018">1018</span>
+<span id="1019">1019</span>
+<span id="1020">1020</span>
+<span id="1021">1021</span>
+<span id="1022">1022</span>
+<span id="1023">1023</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Byte level parsers and combinators</span>
 <span class='doccomment'>//!</span>
@@ -1262,7 +1273,7 @@
 <span class='doccomment'>/// `escaped!(&amp;[T] -&gt; IResult&lt;&amp;[T], &amp;[T]&gt;, T, &amp;[T] -&gt; IResult&lt;&amp;[T], &amp;[T]&gt;) =&gt; &amp;[T] -&gt; IResult&lt;&amp;[T], &amp;[T]&gt;`</span>
 <span class='doccomment'>/// matches a byte string with escaped characters.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// The first argument parses the normal characters, the second argument is the control character (like `\` in most languages),</span>
+<span class='doccomment'>/// The first argument matches the normal characters (it must not accept the control character), the second argument is the control character (like `\` in most languages),</span>
 <span class='doccomment'>/// the third argument matches the escaped characters</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```</span>
@@ -1359,7 +1370,7 @@
 <span class='doccomment'>/// `escaped_transform!(&amp;[T] -&gt; IResult&lt;&amp;[T], &amp;[T]&gt;, T, &amp;[T] -&gt; IResult&lt;&amp;[T], &amp;[T]&gt;) =&gt; &amp;[T] -&gt; IResult&lt;&amp;[T], Vec&lt;T&gt;&gt;`</span>
 <span class='doccomment'>/// matches a byte string with escaped characters.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// The first argument parses the normal characters, the second argument is the control character (like `\` in most languages),</span>
+<span class='doccomment'>/// The first argument matches the normal characters (it must not match the control character), the second argument is the control character (like `\` in most languages),</span>
 <span class='doccomment'>/// the third argument matches the escaped characters and trnasforms them.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// As an example, the chain `abc\tdef` could be `abc    def` (it also consumes the control character)</span>
@@ -1498,7 +1509,7 @@
           <span class='ident'>res</span>
         },
         <span class='prelude-val'>None</span>    <span class='op'>=&gt;</span> {
-          <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>crate</span>::<span class='ident'>IResult</span>::<span class='ident'>Done</span>(<span class='kw-2'>&amp;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>input</span>[..<span class='number'>0</span>], <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>input</span>)
+          <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>crate</span>::<span class='ident'>IResult</span>::<span class='ident'>Done</span>(<span class='kw-2'>&amp;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>input</span>[(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>input</span>).<span class='ident'>len</span>()..], <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>input</span>)
         }
       }
     }
@@ -1526,7 +1537,7 @@
             <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>crate</span>::<span class='ident'>IResult</span>::<span class='ident'>Done</span>(<span class='kw-2'>&amp;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>input</span>[<span class='ident'>n</span>..], <span class='kw-2'>&amp;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>input</span>[..<span class='ident'>n</span>])
           },
           <span class='prelude-val'>None</span>    <span class='op'>=&gt;</span> {
-            <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>crate</span>::<span class='ident'>IResult</span>::<span class='ident'>Done</span>(<span class='kw-2'>&amp;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>input</span>[..<span class='number'>0</span>], <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>input</span>)
+            <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>crate</span>::<span class='ident'>IResult</span>::<span class='ident'>Done</span>(<span class='kw-2'>&amp;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>input</span>[(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>input</span>).<span class='ident'>len</span>()..], <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>input</span>)
           }
         }
       }
@@ -2066,6 +2077,16 @@
     <span class='ident'>b</span>.<span class='ident'>iter</span>(<span class='op'>||</span> {
       <span class='ident'>f</span>(<span class='kw-2'>&amp;</span><span class='string'>b&quot;abcdefghijklABCDEejfrfrjgro12aa&quot;</span>[..])
     });
+  }
+
+  <span class='attribute'>#[<span class='ident'>test</span>]</span>
+  <span class='kw'>fn</span> <span class='ident'>recognize_take_while</span>() {
+    <span class='kw'>use</span> <span class='ident'>nom</span>::<span class='ident'>is_alphanumeric</span>;
+    <span class='macro'>named</span><span class='macro'>!</span>(<span class='ident'>x</span>, <span class='macro'>take_while</span><span class='macro'>!</span>(<span class='ident'>is_alphanumeric</span>));
+    <span class='macro'>named</span><span class='macro'>!</span>(<span class='ident'>y</span>, <span class='macro'>recognize</span><span class='macro'>!</span>(<span class='ident'>x</span>));
+    <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>x</span>(<span class='kw-2'>&amp;</span><span class='string'>b&quot;ab&quot;</span>[..]), <span class='ident'>Done</span>(<span class='kw-2'>&amp;</span>[][..], <span class='kw-2'>&amp;</span><span class='string'>b&quot;ab&quot;</span>[..]));
+    <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;X: {:?}&quot;</span>, <span class='ident'>x</span>(<span class='kw-2'>&amp;</span><span class='string'>b&quot;ab&quot;</span>[..]));
+    <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>y</span>(<span class='kw-2'>&amp;</span><span class='string'>b&quot;ab&quot;</span>[..]), <span class='ident'>Done</span>(<span class='kw-2'>&amp;</span>[][..], <span class='kw-2'>&amp;</span><span class='string'>b&quot;ab&quot;</span>[..]));
   }
 }
 </pre>

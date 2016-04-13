@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/ubuntu/.cargo/registry/src/github.com-88ac128001ac3a9a/nom-1.2.1/src/str.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/ubuntu/.cargo/registry/src/github.com-88ac128001ac3a9a/nom-1.2.2/src/str.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>str.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -770,6 +771,11 @@
 <span id="727">727</span>
 <span id="728">728</span>
 <span id="729">729</span>
+<span id="730">730</span>
+<span id="731">731</span>
+<span id="732">732</span>
+<span id="733">733</span>
+<span id="734">734</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Parsers and helper functions operating on strings, especially useful when writing parsers for</span>
 <span class='doccomment'>//! text-based formats.</span>
@@ -1105,7 +1111,12 @@
         <span class='kw'>for</span> (<span class='ident'>o</span>, <span class='ident'>c</span>) <span class='kw'>in</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>input</span>.<span class='ident'>char_indices</span>() {
             <span class='kw'>if</span> <span class='ident'>shift_window_and_cmp</span>(<span class='kw-2'>&amp;</span> <span class='kw-2'>mut</span> <span class='ident'>window</span>, <span class='ident'>c</span>, <span class='kw-2'>&amp;</span><span class='ident'>substr_vec</span>) {
                 <span class='ident'>parsed</span> <span class='op'>=</span> <span class='boolval'>true</span>;
-                <span class='ident'>offset</span> <span class='op'>=</span> <span class='ident'>o</span> <span class='op'>-</span> <span class='ident'>window</span>[<span class='number'>1</span>].<span class='ident'>len_utf8</span>() <span class='op'>-</span> <span class='ident'>window</span>[<span class='number'>2</span>].<span class='ident'>len_utf8</span>()
+                <span class='ident'>window</span>.<span class='ident'>pop</span>();
+                <span class='kw'>let</span> <span class='ident'>window_len</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='ident'>window</span>.<span class='ident'>iter</span>()
+                    .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>len_utf8</span>())
+                    .<span class='ident'>fold</span>(<span class='number'>0</span>, <span class='op'>|</span><span class='ident'>x</span>, <span class='ident'>y</span><span class='op'>|</span> <span class='ident'>x</span> <span class='op'>+</span> <span class='ident'>y</span>);
+                <span class='ident'>offset</span> <span class='op'>=</span> <span class='ident'>o</span> <span class='op'>-</span> <span class='ident'>window_len</span>;
+                <span class='kw'>break</span>;
             }
         }
         <span class='kw'>if</span> <span class='ident'>parsed</span> {
@@ -1190,10 +1201,10 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>take_until_s_succeed</span>() {
-        <span class='kw'>const</span> <span class='ident'>INPUT</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;βèƒôřèÂßÇáƒƭèř&quot;</span>;
-        <span class='kw'>const</span> <span class='ident'>FIND</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;ÂßÇ&quot;</span>;
+        <span class='kw'>const</span> <span class='ident'>INPUT</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;βèƒôřèÂßÇ∂áƒƭèř&quot;</span>;
+        <span class='kw'>const</span> <span class='ident'>FIND</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;ÂßÇ∂&quot;</span>;
         <span class='kw'>const</span> <span class='ident'>CONSUMED</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;βèƒôřè&quot;</span>;
-        <span class='kw'>const</span> <span class='ident'>LEFTOVER</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;ÂßÇáƒƭèř&quot;</span>;
+        <span class='kw'>const</span> <span class='ident'>LEFTOVER</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span> <span class='op'>=</span> <span class='string'>&quot;ÂßÇ∂áƒƭèř&quot;</span>;
 
         <span class='kw'>match</span> <span class='macro'>take_until_s</span><span class='macro'>!</span>(<span class='ident'>INPUT</span>, <span class='ident'>FIND</span>) {
             <span class='ident'>IResult</span>::<span class='ident'>Done</span>(<span class='ident'>extra</span>, <span class='ident'>output</span>) <span class='op'>=&gt;</span> {
