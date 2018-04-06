@@ -9,7 +9,7 @@ license = "MIT"
 readme = "README.md"
 
 [dependencies]
-nom = "1.2.0"
+nom = "3.2.1"
 
 clippy = {version = "~0.0.46", optional = true}
 
