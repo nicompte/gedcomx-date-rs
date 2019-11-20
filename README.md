@@ -2,7 +2,7 @@
 
 [![Circle CI](https://circleci.com/gh/nicompte/gedcomx-date-rs.svg?style=svg)](https://circleci.com/gh/nicompte/gedcomx-date-rs)
 
-Gecomx date parsing written with [nom](https://github.com/Geal/nom) in [rust](https://rust-lang.org).
+Gedcomx date parsing written with [nom](https://github.com/Geal/nom) in [rust](https://rust-lang.org).
 See documentation [here](http://barbotte.net/gedcomx-date-rs/doc/gedcomx_date).
 
 ```rust
