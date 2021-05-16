@@ -6,13 +6,13 @@ use std::str;
 use std::str::FromStr;
 
 named!(u32_digit<u32>,
+  map_res!(
     map_res!(
-        map_res!(
-            digit, 
-            str::from_utf8
-        ), 
-        FromStr::from_str
-    )
+      digit,
+      str::from_utf8
+    ),
+    FromStr::from_str
+  )
 );
 
 // parse duration
@@ -39,7 +39,7 @@ named!(pub duration <Duration>, chain!(
 ));
 
 // parse duration time
-named!(duration_time<(u32, u32, u32)>, dbg!(chain!(
+named!(duration_time <(u32, u32, u32)>, dbg!(chain!(
     complete!(tag!("T")) ~
     h: terminated!(u32_digit, tag!("H"))? ~
     m: terminated!(u32_digit, tag!("M"))? ~
