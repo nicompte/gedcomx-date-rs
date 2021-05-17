@@ -86,7 +86,7 @@ fn test_count() {
 
 #[test]
 fn test_duration() {
-    assert_eq!(parse("R/+1000/PY1M2D3TH4M5S6").unwrap().get_recurring().unwrap(),
+    assert_eq!(parse("R/+1000/P1Y2M3DT4H5M6S").unwrap().get_recurring().unwrap(),
                Recurring {
                    start: DateTime {
                        date: Date {
