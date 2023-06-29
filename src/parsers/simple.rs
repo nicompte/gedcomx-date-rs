@@ -10,26 +10,26 @@ named!(take_4_digits, flat_map!(take!(4), check!(is_digit)));
 named!(year_prefix, alt!(tag!("+") | tag!("-")));
 named!(
     year<i32>,
-    chain!(
-        pref: complete!(year_prefix) ~
-        year: call!(take_4_digits)
-        ,
-        || {
-            match pref {
-                b"-" => - buf_to_i32(year),
-                _ => buf_to_i32(year)
-            }
-    })
+    do_parse!(
+        pref: complete!(year_prefix)
+            >> year: call!(take_4_digits)
+            >> ({
+                match pref {
+                    b"-" => -buf_to_i32(year),
+                    _ => buf_to_i32(year),
+                }
+            })
+    )
 );
 
 // MM
 named!(
     month_zero<u32>,
-    chain!(tag!("0") ~ s:char_between!('1', '9') , || buf_to_u32(s))
+    do_parse!(tag!("0") >> s: char_between!('1', '9') >> (buf_to_u32(s)))
 );
 named!(
     month_one<u32>,
-    chain!(tag!("1") ~ s:char_between!('0', '2') , || 10 + buf_to_u32(s))
+    do_parse!(tag!("1") >> s: char_between!('0', '2') >> (10 + buf_to_u32(s)))
 );
 named!(
     month<u32>,
@@ -39,19 +39,19 @@ named!(
 // DD
 named!(
     day_zero<u32>,
-    chain!(tag!("0") ~ s:char_between!('1', '9'), || buf_to_u32(s))
+    do_parse!(tag!("0") >> s: char_between!('1', '9') >> (buf_to_u32(s)))
 );
 named!(
     day_one<u32>,
-    chain!(tag!("1") ~ s:char_between!('0', '9'), || 10 + buf_to_u32(s))
+    do_parse!(tag!("1") >> s: char_between!('0', '9') >> (10 + buf_to_u32(s)))
 );
 named!(
     day_two<u32>,
-    chain!(tag!("2") ~ s:char_between!('0', '9'), || 20 + buf_to_u32(s))
+    do_parse!(tag!("2") >> s: char_between!('0', '9') >> (20 + buf_to_u32(s)))
 );
 named!(
     day_three<u32>,
-    chain!(tag!("3") ~ s:char_between!('0', '1'), || 30 + buf_to_u32(s))
+    do_parse!(tag!("3") >> s: char_between!('0', '1') >> (30 + buf_to_u32(s)))
 );
 named!(
     day<u32>,
@@ -63,11 +63,11 @@ named!(
     ymd<Date>,
     alt!(
         // YYYY-MM-DD
-        chain!(y: year ~ complete!(tag!("-")) ~ m: month ~ complete!(tag!("-")) ~ d: day, || Date {year: y, month: Some(m), day: Some(d)}) |
+        do_parse!(y: year >> complete!(tag!("-")) >> m: month >> complete!(tag!("-")) >> d: day >> (Date {year: y, month: Some(m), day: Some(d)})) |
 // YYYY-MM
-    chain!(y: year ~ complete!(tag!("-")) ~ m: month, || Date {year: y, month: Some(m), day: None}) |
+    do_parse!(y: year >> complete!(tag!("-")) >> m: month >> (Date {year: y, month: Some(m), day: None})) |
 // YYYY
-    chain!(y: year, || Date {year: y, month: None, day: None})
+    do_parse!(y: year >> (Date {year: y, month: None, day: None}))
     )
 );
 
@@ -77,19 +77,26 @@ named!(pub parse_date <Date>, alt!( ymd ) );
 // HH
 named!(
     lower_hour<u32>,
-    chain!(f:char_between!('0','1') ~ s:char_between!('0','9') ,
-                                       || { buf_to_u32(f) * 10 + buf_to_u32(s) } )
+    do_parse!(
+        f: char_between!('0', '1')
+            >> s: char_between!('0', '9')
+            >> (buf_to_u32(f) * 10 + buf_to_u32(s))
+    )
 );
 named!(
     upper_hour<u32>,
-    chain!(tag!("2") ~ s:char_between!('0','4') , || 20 + buf_to_u32(s))
+    do_parse!(tag!("2") >> s: char_between!('0', '4') >> (20 + buf_to_u32(s)))
 );
 named!(hour<u32>, alt!(lower_hour | upper_hour));
 
 // MM
 named!(
     below_sixty<u32>,
-    chain!(f:char_between!('0','5') ~ s:char_between!('0','9'), || { buf_to_u32(f) * 10 + buf_to_u32(s) } )
+    do_parse!(
+        f: char_between!('0', '5')
+            >> s: char_between!('0', '9')
+            >> (buf_to_u32(f) * 10 + buf_to_u32(s))
+    )
 );
 named!(
     upto_sixty<u32>,
@@ -103,19 +110,19 @@ named!(
     hms<(u32, Option<u32>, Option<u32>)>,
     alt!(
         // hh:mm:ss
-        chain!(h: hour ~ complete!(tag!(":")) ~ m: minute ~ complete!(tag!(":")) ~ s: second, || (h, Some(m), Some(s))) |
+        do_parse!(h: hour >> complete!(tag!(":")) >> m: minute >> complete!(tag!(":")) >> s: second >> (h, Some(m), Some(s))) |
 // hh:mm
-    chain!(h: hour ~ complete!(tag!(":")) ~ m: minute, || (h, Some(m), None)) |
+    do_parse!(h: hour >> complete!(tag!(":")) >> m: minute >> (h, Some(m), None)) |
 // hh
-    chain!(h: hour, || (h, None, None))
+    do_parse!(h: hour >> (h, None, None))
     )
 );
 
 // HH[:MM][:SS][(Z|+...|-...)]
-named!(pub parse_time <Time>, chain!(
-    hms: hms ~
-    z:  opt!(complete!( alt!( timezone_hour | timezone_utc) )),
-    || {
+named!(pub parse_time <Time>, do_parse!(
+    hms: hms >>
+    z:  opt!(complete!( alt!( timezone_hour | timezone_utc))) >>
+    ({
         let tz = z.unwrap_or((None, None));
         Time {
             hours: hms.0,
@@ -124,7 +131,7 @@ named!(pub parse_time <Time>, chain!(
             tz_offset_hours: tz.0,
             tz_offset_minutes: tz.1
         }
-    }
+    })
 ));
 
 named!(
@@ -137,15 +144,11 @@ named!(
 
 named!(
     timezone_hour<(Option<i32>, Option<i32>)>,
-    chain!(
-        s: sign ~
-        h: hour ~
-        m: empty_or!(
-            chain!(
-                tag!(":")? ~ m: minute , || { m }
-            ))
-        ,
-        || { (Some(s * (h as i32)), Some(s * (m.unwrap_or(0) as i32))) }
+    do_parse!(
+        s: sign
+            >> h: hour
+            >> m: empty_or!(do_parse!(opt!(tag!(":")) >> m: minute >> (m)))
+            >> ({ (Some(s * (h as i32)), Some(s * (m.unwrap_or(0) as i32))) })
     )
 );
 
@@ -154,29 +157,27 @@ named!(
     map!(tag!("Z"), |_| (Some(0), Some(0)))
 );
 
-// named!(pub parse_datetime <GedcomxDate>, chain!(d:datetime, || GedcomxDate::Simple(d)));
+// named!(pub parse_datetime <GedcomxDate>, opt!(d:datetime >> (GedcomxDate::Simple(d))));
 
-named!(pub simple_date <GedcomxDate>, chain!(
-    a: approximate? ~
-    d: datetime, || {
+named!(pub simple_date <GedcomxDate>, do_parse!(
+    a: opt!(approximate) >>
+    d: datetime >>
+    (
         GedcomxDate::Simple(Simple {
             date: d.date,
             time: d.time,
             approximate: a.is_some()
         })
-    }
+    )
 ));
 
-named!(pub datetime <DateTime>, chain!(
-    d: parse_date ~
-    t: opt!(complete!(chain!(tag!("T") ~ time: parse_time, || time)))
-    ,
-    || {
-        DateTime{
-            date: d,
-            time: t,
-        }
-    }
+named!(pub datetime <DateTime>, do_parse!(
+    d: parse_date >>
+    t: opt!(complete!(do_parse!(tag!("T") >> time: parse_time >> (time)))) >>
+    (DateTime{
+        date: d,
+        time: t,
+    })
 ));
 
 #[cfg(test)]

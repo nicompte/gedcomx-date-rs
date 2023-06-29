@@ -61,11 +61,11 @@ use nom::eof;
 
 named!(
     parse_datetime<DateTimeOrDuration>,
-    chain!(d: datetime, || DateTimeOrDuration::DateTime(d))
+    do_parse!(d: datetime >> (DateTimeOrDuration::DateTime(d)))
 );
 named!(
     parse_duration<DateTimeOrDuration>,
-    chain!(d: duration, || DateTimeOrDuration::Duration(d))
+    do_parse!(d: duration >> (DateTimeOrDuration::Duration(d)))
 );
 
 named!(pub datetime_or_duration <DateTimeOrDuration>, alt_complete!(parse_duration | parse_datetime));
@@ -74,4 +74,4 @@ named!(approximate<bool>, map!(tag!("A"), |_| true));
 
 /// main parse function
 /// parse either a recurring, a range, or a simple date
-named!(pub parse <GedcomxDate>, chain!( d:alt_complete!(recurring | range | simple_date) ~ eof, || d));
+named!(pub parse <GedcomxDate>, do_parse!( d:alt_complete!(recurring | range | simple_date) >> eof!() >> (d)));

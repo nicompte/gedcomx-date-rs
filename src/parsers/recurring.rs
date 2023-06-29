@@ -15,12 +15,12 @@ named!(
 );
 
 named!(pub recurring <GedcomxDate>,
-    chain!(
-        complete!(tag!("R")) ~
-        c: u32_digit? ~
-        tag!("/") ~
+    do_parse!(
+        complete!(tag!("R")) >>
+        c: opt!(u32_digit) >>
+        tag!("/") >>
         dates: alt_complete!(
-            chain!(start:datetime ~ complete!(range_marker) ~ end:datetime_or_duration, || (start, end))
-        ),
-        || GedcomxDate::Recurring(Recurring {start: dates.0, end: dates.1, count: c})
+            do_parse!(start:datetime >> complete!(range_marker) >> end:datetime_or_duration >> (start, end))
+        ) >>
+        (GedcomxDate::Recurring(Recurring {start: dates.0, end: dates.1, count: c}))
 ));

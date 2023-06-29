@@ -10,13 +10,13 @@ named!(
 );
 
 // parse duration
-named!(pub duration <Duration>, chain!(
-    complete!(tag!("P")) ~
-    y: terminated!(u32_digit, tag!("Y"))? ~
-    m: terminated!(u32_digit, tag!("M"))? ~
-    d: terminated!(u32_digit, tag!("D"))? ~
-    dt: duration_time?,
-    || {
+named!(pub duration <Duration>, do_parse!(
+    complete!(tag!("P")) >>
+    y: opt!(terminated!(u32_digit, tag!("Y"))) >>
+    m: opt!(terminated!(u32_digit, tag!("M"))) >>
+    d: opt!(terminated!(u32_digit, tag!("D"))) >>
+    dt: opt!(duration_time) >>
+    ({
         let duration_time = dt.unwrap_or((0, 0, 0));
         Duration{
             years: y.unwrap_or(0),
@@ -26,20 +26,18 @@ named!(pub duration <Duration>, chain!(
             minutes: duration_time.1,
             seconds: duration_time.2
         }
-    }
+    })
 ));
 
 // parse duration time
 named!(
     duration_time<(u32, u32, u32)>,
-    dbg!(chain!(
-        complete!(tag!("T")) ~
-        h: terminated!(u32_digit, tag!("H"))? ~
-        m: terminated!(u32_digit, tag!("M"))? ~
-        s: terminated!(u32_digit, tag!("S"))?,
-        || {
-            (h.unwrap_or(0), m.unwrap_or(0), s.unwrap_or(0))
-        }
+    dbg!(do_parse!(
+        complete!(tag!("T"))
+            >> h: opt!(terminated!(u32_digit, tag!("H")))
+            >> m: opt!(terminated!(u32_digit, tag!("M")))
+            >> s: opt!(terminated!(u32_digit, tag!("S")))
+            >> (h.unwrap_or(0), m.unwrap_or(0), s.unwrap_or(0))
     ))
 );
 
