@@ -1,4 +1,3 @@
-
 //! gedcomx-date-rs is a [rust](https://rust-lang.org) parser library for the
 //! [Gedcomx date format](https://github.com/FamilySearch/gedcomx/blob/master/specifications/date-format-specification.md) format.
 //!
@@ -44,7 +43,7 @@ mod bench;
 extern crate test;
 
 /// A date object
-#[derive(Eq,PartialEq,Debug,Copy,Clone)]
+#[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub struct Date {
     pub year: i32,
     pub month: Option<u32>,
@@ -52,7 +51,7 @@ pub struct Date {
 }
 
 /// A time object
-#[derive(Eq,PartialEq,Debug,Copy,Clone)]
+#[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub struct Time {
     pub hours: u32,
     pub minutes: Option<u32>,
@@ -62,7 +61,7 @@ pub struct Time {
 }
 
 /// Simple date
-#[derive(Eq,PartialEq,Debug,Copy,Clone)]
+#[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub struct Simple {
     pub date: Date,
     pub time: Option<Time>,
@@ -71,14 +70,14 @@ pub struct Simple {
 
 /// DateTime, same as simple date, but cannot be approximate.
 /// Used for ranges and approximate
-#[derive(Eq,PartialEq,Debug,Copy,Clone)]
+#[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub struct DateTime {
     pub date: Date,
     pub time: Option<Time>,
 }
 
 /// Duration
-#[derive(Eq,PartialEq,Debug,Copy,Clone)]
+#[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub struct Duration {
     pub years: u32,
     pub months: u32,
@@ -89,14 +88,14 @@ pub struct Duration {
 }
 
 /// Gedcomx date
-#[derive(Eq,PartialEq,Debug,Copy,Clone)]
+#[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub enum DateTimeOrDuration {
     DateTime(DateTime),
     Duration(Duration),
 }
 
 /// Range
-#[derive(Eq,PartialEq,Debug,Copy,Clone)]
+#[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub struct Range {
     pub start: Option<DateTime>,
     pub end: Option<DateTimeOrDuration>,
@@ -104,7 +103,7 @@ pub struct Range {
 }
 
 /// Recurring
-#[derive(Eq,PartialEq,Debug,Copy,Clone)]
+#[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub struct Recurring {
     pub start: DateTime,
     pub end: DateTimeOrDuration,
@@ -113,7 +112,7 @@ pub struct Recurring {
 
 /// Gedcomx date
 /// Enum that holds the three types of gedcomx dates
-#[derive(Eq,PartialEq,Debug,Copy,Clone)]
+#[derive(Eq, PartialEq, Debug, Copy, Clone)]
 pub enum GedcomxDate {
     /// Simple date. See
     /// [5.2 Simple date](https://github.com/FamilySearch/gedcomx/blob/master/specifications/date-format-specification.md#52-simple-date),
@@ -175,7 +174,7 @@ impl GedcomxDate {
 pub fn parse(string: &str) -> Result<GedcomxDate, String> {
     match parsers::parse(string.as_bytes()) {
         Done(_, parsed) => Ok(parsed),
-        Error(_) => Err(format!("Parsing error")),
-        Incomplete(_) => Err(format!("Parsing error")),
+        Error(_) => Err("Parsing error".to_string()),
+        Incomplete(_) => Err("Parsing error".to_string()),
     }
 }

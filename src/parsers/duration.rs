@@ -1,18 +1,12 @@
-
-use nom::digit;
 use super::super::Duration;
+use nom::digit;
 
 use std::str;
 use std::str::FromStr;
 
-named!(u32_digit<u32>,
-  map_res!(
-    map_res!(
-      digit,
-      str::from_utf8
-    ),
-    FromStr::from_str
-  )
+named!(
+    u32_digit<u32>,
+    map_res!(map_res!(digit, str::from_utf8), FromStr::from_str)
 );
 
 // parse duration
@@ -23,10 +17,7 @@ named!(pub duration <Duration>, chain!(
     d: terminated!(u32_digit, tag!("D"))? ~
     dt: duration_time?,
     || {
-        let duration_time = match dt {
-            Some(d) => d,
-            None => (0, 0, 0)
-        };
+        let duration_time = dt.unwrap_or((0, 0, 0));
         Duration{
             years: y.unwrap_or(0),
             months: m.unwrap_or(0),
@@ -39,15 +30,18 @@ named!(pub duration <Duration>, chain!(
 ));
 
 // parse duration time
-named!(duration_time <(u32, u32, u32)>, dbg!(chain!(
-    complete!(tag!("T")) ~
-    h: terminated!(u32_digit, tag!("H"))? ~
-    m: terminated!(u32_digit, tag!("M"))? ~
-    s: terminated!(u32_digit, tag!("S"))?,
-    || {
-        (h.unwrap_or(0), m.unwrap_or(0), s.unwrap_or(0))
-    }
-)));
+named!(
+    duration_time<(u32, u32, u32)>,
+    dbg!(chain!(
+        complete!(tag!("T")) ~
+        h: terminated!(u32_digit, tag!("H"))? ~
+        m: terminated!(u32_digit, tag!("M"))? ~
+        s: terminated!(u32_digit, tag!("S"))?,
+        || {
+            (h.unwrap_or(0), m.unwrap_or(0), s.unwrap_or(0))
+        }
+    ))
+);
 
 #[cfg(test)]
 mod tests {

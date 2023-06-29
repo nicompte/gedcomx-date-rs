@@ -1,23 +1,17 @@
-
 use nom::digit;
 
 use super::super::{GedcomxDate, Recurring};
-use super::simple::datetime;
 use super::datetime_or_duration;
+use super::simple::datetime;
 
-named!(range_marker <bool>, map!(tag!("/"), |_| true));
+named!(range_marker<bool>, map!(tag!("/"), |_| true));
 
 use std::str;
 use std::str::FromStr;
 
-named!(u32_digit<u32>,
-  map_res!(
-    map_res!(
-      digit,
-      str::from_utf8
-    ),
-    FromStr::from_str
-  )
+named!(
+    u32_digit<u32>,
+    map_res!(map_res!(digit, str::from_utf8), FromStr::from_str)
 );
 
 named!(pub recurring <GedcomxDate>,

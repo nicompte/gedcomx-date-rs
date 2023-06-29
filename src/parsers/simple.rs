@@ -1,7 +1,6 @@
-
 use nom::is_digit;
 
-use super::super::{GedcomxDate, Simple, Date, Time, DateTime};
+use super::super::{Date, DateTime, GedcomxDate, Simple, Time};
 use super::approximate;
 use helper::*;
 
@@ -9,68 +8,108 @@ named!(take_4_digits, flat_map!(take!(4), check!(is_digit)));
 
 // YYYY
 named!(year_prefix, alt!(tag!("+") | tag!("-")));
-named!(year <i32>, chain!(
-    pref: complete!(year_prefix) ~
-    year: call!(take_4_digits)
-    ,
-    || {
-        match pref {
-            b"-" => - buf_to_i32(year),
-            _ => buf_to_i32(year)
-        }
-}));
+named!(
+    year<i32>,
+    chain!(
+        pref: complete!(year_prefix) ~
+        year: call!(take_4_digits)
+        ,
+        || {
+            match pref {
+                b"-" => - buf_to_i32(year),
+                _ => buf_to_i32(year)
+            }
+    })
+);
 
 // MM
-named!(month_zero <u32>, chain!(tag!("0") ~ s:char_between!('1', '9') , || buf_to_u32(s)));
-named!(month_one <u32>, chain!(tag!("1") ~ s:char_between!('0', '2') , || 10 + buf_to_u32(s)));
-named!(month <u32>, alt!(complete!(month_zero) | complete!(month_one)));
+named!(
+    month_zero<u32>,
+    chain!(tag!("0") ~ s:char_between!('1', '9') , || buf_to_u32(s))
+);
+named!(
+    month_one<u32>,
+    chain!(tag!("1") ~ s:char_between!('0', '2') , || 10 + buf_to_u32(s))
+);
+named!(
+    month<u32>,
+    alt!(complete!(month_zero) | complete!(month_one))
+);
 
 // DD
-named!(day_zero  <u32>, chain!(tag!("0") ~ s:char_between!('1', '9'), || buf_to_u32(s)));
-named!(day_one   <u32>, chain!(tag!("1") ~ s:char_between!('0', '9'), || 10 + buf_to_u32(s)));
-named!(day_two   <u32>, chain!(tag!("2") ~ s:char_between!('0', '9'), || 20 + buf_to_u32(s)));
-named!(day_three <u32>, chain!(tag!("3") ~ s:char_between!('0', '1'), || 30 + buf_to_u32(s)));
-named!(day <u32>, alt!(
-    complete!(day_zero) |
-    complete!(day_one) |
-    complete!(day_two) |
-    complete!(day_three))
+named!(
+    day_zero<u32>,
+    chain!(tag!("0") ~ s:char_between!('1', '9'), || buf_to_u32(s))
+);
+named!(
+    day_one<u32>,
+    chain!(tag!("1") ~ s:char_between!('0', '9'), || 10 + buf_to_u32(s))
+);
+named!(
+    day_two<u32>,
+    chain!(tag!("2") ~ s:char_between!('0', '9'), || 20 + buf_to_u32(s))
+);
+named!(
+    day_three<u32>,
+    chain!(tag!("3") ~ s:char_between!('0', '1'), || 30 + buf_to_u32(s))
+);
+named!(
+    day<u32>,
+    alt!(complete!(day_zero) | complete!(day_one) | complete!(day_two) | complete!(day_three))
 );
 
 // YYYY[-MM][-DD]
-named!(ymd <Date>, alt!(
-// YYYY-MM-DD
-    chain!(y: year ~ complete!(tag!("-")) ~ m: month ~ complete!(tag!("-")) ~ d: day, || Date {year: y, month: Some(m), day: Some(d)}) |
+named!(
+    ymd<Date>,
+    alt!(
+        // YYYY-MM-DD
+        chain!(y: year ~ complete!(tag!("-")) ~ m: month ~ complete!(tag!("-")) ~ d: day, || Date {year: y, month: Some(m), day: Some(d)}) |
 // YYYY-MM
     chain!(y: year ~ complete!(tag!("-")) ~ m: month, || Date {year: y, month: Some(m), day: None}) |
 // YYYY
     chain!(y: year, || Date {year: y, month: None, day: None})
-));
+    )
+);
 
 named!(pub parse_date <Date>, alt!( ymd ) );
 
 // TIME
 // HH
-named!(lower_hour <u32>, chain!(f:char_between!('0','1') ~ s:char_between!('0','9') ,
-                                       || { buf_to_u32(f) * 10 + buf_to_u32(s) } ));
-named!(upper_hour <u32>, chain!(tag!("2") ~ s:char_between!('0','4') , || 20 + buf_to_u32(s)));
-named!(hour <u32>, alt!(lower_hour | upper_hour));
+named!(
+    lower_hour<u32>,
+    chain!(f:char_between!('0','1') ~ s:char_between!('0','9') ,
+                                       || { buf_to_u32(f) * 10 + buf_to_u32(s) } )
+);
+named!(
+    upper_hour<u32>,
+    chain!(tag!("2") ~ s:char_between!('0','4') , || 20 + buf_to_u32(s))
+);
+named!(hour<u32>, alt!(lower_hour | upper_hour));
 
 // MM
-named!(below_sixty <u32>, chain!(f:char_between!('0','5') ~ s:char_between!('0','9'), || { buf_to_u32(f) * 10 + buf_to_u32(s) } ));
-named!(upto_sixty <u32>, alt!(below_sixty | map!(tag!("60"), |_| 60)));
+named!(
+    below_sixty<u32>,
+    chain!(f:char_between!('0','5') ~ s:char_between!('0','9'), || { buf_to_u32(f) * 10 + buf_to_u32(s) } )
+);
+named!(
+    upto_sixty<u32>,
+    alt!(below_sixty | map!(tag!("60"), |_| 60))
+);
 
-named!(minute <u32>, call!(below_sixty));
-named!(second <u32>, call!(upto_sixty));
+named!(minute<u32>, call!(below_sixty));
+named!(second<u32>, call!(upto_sixty));
 
-named!(hms <(u32, Option<u32>, Option<u32>)>, alt!(
-// hh:mm:ss
-    chain!(h: hour ~ complete!(tag!(":")) ~ m: minute ~ complete!(tag!(":")) ~ s: second, || (h, Some(m), Some(s))) |
+named!(
+    hms<(u32, Option<u32>, Option<u32>)>,
+    alt!(
+        // hh:mm:ss
+        chain!(h: hour ~ complete!(tag!(":")) ~ m: minute ~ complete!(tag!(":")) ~ s: second, || (h, Some(m), Some(s))) |
 // hh:mm
     chain!(h: hour ~ complete!(tag!(":")) ~ m: minute, || (h, Some(m), None)) |
 // hh
     chain!(h: hour, || (h, None, None))
-));
+    )
+);
 
 // HH[:MM][:SS][(Z|+...|-...)]
 named!(pub parse_time <Time>, chain!(
@@ -88,24 +127,32 @@ named!(pub parse_time <Time>, chain!(
     }
 ));
 
-named!(sign <i32>, alt!(
+named!(
+    sign<i32>,
+    alt!(
     tag!("-") => { |_| -1 } |
     tag!("+") => { |_| 1 }
     )
 );
 
-named!(timezone_hour <(Option<i32>, Option<i32>)>, chain!(
-    s: sign ~
-    h: hour ~
-    m: empty_or!(
-        chain!(
-            tag!(":")? ~ m: minute , || { m }
-        ))
-    ,
-    || { (Some(s * (h as i32)), Some(s * (m.unwrap_or(0) as i32))) }
-));
+named!(
+    timezone_hour<(Option<i32>, Option<i32>)>,
+    chain!(
+        s: sign ~
+        h: hour ~
+        m: empty_or!(
+            chain!(
+                tag!(":")? ~ m: minute , || { m }
+            ))
+        ,
+        || { (Some(s * (h as i32)), Some(s * (m.unwrap_or(0) as i32))) }
+    )
+);
 
-named!(timezone_utc <(Option<i32>,Option<i32>)>, map!(tag!("Z"), |_| (Some(0),Some(0))));
+named!(
+    timezone_utc<(Option<i32>, Option<i32>)>,
+    map!(tag!("Z"), |_| (Some(0), Some(0)))
+);
 
 // named!(pub parse_datetime <GedcomxDate>, chain!(d:datetime, || GedcomxDate::Simple(d)));
 
@@ -115,7 +162,7 @@ named!(pub simple_date <GedcomxDate>, chain!(
         GedcomxDate::Simple(Simple {
             date: d.date,
             time: d.time,
-            approximate: match a { Some(_) => true, None => false}
+            approximate: a.is_some()
         })
     }
 ));
@@ -138,9 +185,9 @@ mod tests {
     use nom::IResult::*;
 
     use super::super::super::{Date, Time};
-    use super::{ymd, parse_time};
-    use super::{year, month, day};
+    use super::{day, month, year};
     use super::{hour, minute, second};
+    use super::{parse_time, ymd};
 
     #[test]
     fn test_year() {
@@ -184,27 +231,39 @@ mod tests {
 
     #[test]
     fn test_ymd() {
-        assert_eq!(Done(&[][..],
-                        Date {
-                            year: 1988,
-                            month: Some(3),
-                            day: Some(29),
-                        }),
-                   ymd(b"+1988-03-29"));
-        assert_eq!(Done(&[][..],
-                        Date {
-                            year: 1988,
-                            month: Some(3),
-                            day: None,
-                        }),
-                   ymd(b"+1988-03"));
-        assert_eq!(Done(&[][..],
-                        Date {
-                            year: 1988,
-                            month: None,
-                            day: None,
-                        }),
-                   ymd(b"+1988"));
+        assert_eq!(
+            Done(
+                &[][..],
+                Date {
+                    year: 1988,
+                    month: Some(3),
+                    day: Some(29),
+                }
+            ),
+            ymd(b"+1988-03-29")
+        );
+        assert_eq!(
+            Done(
+                &[][..],
+                Date {
+                    year: 1988,
+                    month: Some(3),
+                    day: None,
+                }
+            ),
+            ymd(b"+1988-03")
+        );
+        assert_eq!(
+            Done(
+                &[][..],
+                Date {
+                    year: 1988,
+                    month: None,
+                    day: None,
+                }
+            ),
+            ymd(b"+1988")
+        );
 
         // assert!(ymd(b"+1988-3-29").is_err());
         // assert!(ymd(b"+1988-3").is_err());
@@ -252,42 +311,58 @@ mod tests {
 
     #[test]
     fn test_time() {
-        assert_eq!(Done(&[][..],
-                        Time {
-                            hours: 10,
-                            minutes: None,
-                            seconds: None,
-                            tz_offset_hours: None,
-                            tz_offset_minutes: None,
-                        }),
-                   parse_time(b"10"));
-        assert_eq!(Done(&[][..],
-                        Time {
-                            hours: 10,
-                            minutes: Some(30),
-                            seconds: None,
-                            tz_offset_hours: None,
-                            tz_offset_minutes: None,
-                        }),
-                   parse_time(b"10:30"));
-        assert_eq!(Done(&[][..],
-                        Time {
-                            hours: 10,
-                            minutes: Some(30),
-                            seconds: Some(29),
-                            tz_offset_hours: None,
-                            tz_offset_minutes: None,
-                        }),
-                   parse_time(b"10:30:29"));
-        assert_eq!(Done(&b":1:01"[..],
-                        Time {
-                            hours: 10,
-                            minutes: None,
-                            seconds: None,
-                            tz_offset_hours: None,
-                            tz_offset_minutes: None,
-                        }),
-                   parse_time(b"10:1:01"));
+        assert_eq!(
+            Done(
+                &[][..],
+                Time {
+                    hours: 10,
+                    minutes: None,
+                    seconds: None,
+                    tz_offset_hours: None,
+                    tz_offset_minutes: None,
+                }
+            ),
+            parse_time(b"10")
+        );
+        assert_eq!(
+            Done(
+                &[][..],
+                Time {
+                    hours: 10,
+                    minutes: Some(30),
+                    seconds: None,
+                    tz_offset_hours: None,
+                    tz_offset_minutes: None,
+                }
+            ),
+            parse_time(b"10:30")
+        );
+        assert_eq!(
+            Done(
+                &[][..],
+                Time {
+                    hours: 10,
+                    minutes: Some(30),
+                    seconds: Some(29),
+                    tz_offset_hours: None,
+                    tz_offset_minutes: None,
+                }
+            ),
+            parse_time(b"10:30:29")
+        );
+        assert_eq!(
+            Done(
+                &b":1:01"[..],
+                Time {
+                    hours: 10,
+                    minutes: None,
+                    seconds: None,
+                    tz_offset_hours: None,
+                    tz_offset_minutes: None,
+                }
+            ),
+            parse_time(b"10:1:01")
+        );
 
         // assert!(parse_time(b"10:1:01").is_err());
     }

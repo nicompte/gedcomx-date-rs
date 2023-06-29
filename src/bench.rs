@@ -1,8 +1,7 @@
-
 #[cfg(feature = "bench")]
 mod bench {
-    use test::Bencher;
     use super::super::*;
+    use test::Bencher;
 
     #[bench]
     fn bench_simple_date(b: &mut Bencher) {
