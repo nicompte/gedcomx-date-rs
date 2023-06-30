@@ -43,21 +43,18 @@ named!(
 
 #[cfg(test)]
 mod tests {
-
-    use nom::IResult::*;
-
     use super::super::super::Duration;
     use super::{duration, duration_time};
 
     #[test]
     fn test_duration_time() {
-        assert_eq!(Done(&[][..], (10, 10, 10)), duration_time(b"T10H10M10S"));
+        assert_eq!(Ok((&[][..], (10, 10, 10))), duration_time(b"T10H10M10S"));
 
-        assert_eq!(Done(&[][..], (10, 10, 0)), duration_time(b"T10H10M0S"));
+        assert_eq!(Ok((&[][..], (10, 10, 0))), duration_time(b"T10H10M0S"));
 
-        assert_eq!(Done(&[][..], (10, 0, 0)), duration_time(b"T10H0S"));
+        assert_eq!(Ok((&[][..], (10, 0, 0))), duration_time(b"T10H0S"));
 
-        assert_eq!(Done(&[][..], (0, 0, 200)), duration_time(b"T200S"));
+        assert_eq!(Ok((&[][..], (0, 0, 200))), duration_time(b"T200S"));
 
         assert!(duration_time(b"10H10M10S").is_err());
         assert!(duration_time(b"10H10S10M").is_err());
@@ -66,7 +63,7 @@ mod tests {
     #[test]
     fn test_duration() {
         assert_eq!(
-            Done(
+            Ok((
                 &[][..],
                 Duration {
                     years: 10,
@@ -76,12 +73,12 @@ mod tests {
                     minutes: 20,
                     seconds: 30,
                 }
-            ),
+            )),
             duration(b"P10Y20M30DT10H20M30S")
         );
 
         assert_eq!(
-            Done(
+            Ok((
                 &[][..],
                 Duration {
                     years: 10,
@@ -91,12 +88,12 @@ mod tests {
                     minutes: 0,
                     seconds: 0,
                 }
-            ),
+            )),
             duration(b"P10YT10H0S")
         );
 
         assert_eq!(
-            Done(
+            Ok((
                 &[][..],
                 Duration {
                     years: 0,
@@ -106,12 +103,12 @@ mod tests {
                     minutes: 1000,
                     seconds: 0,
                 }
-            ),
+            )),
             duration(b"PT1000M0S")
         );
 
         assert_eq!(
-            Done(
+            Ok((
                 &[][..],
                 Duration {
                     years: 10,
@@ -121,12 +118,12 @@ mod tests {
                     minutes: 0,
                     seconds: 0,
                 }
-            ),
+            )),
             duration(b"P10YT0S")
         );
 
         assert_eq!(
-            Done(
+            Ok((
                 &[][..],
                 Duration {
                     years: 0,
@@ -136,12 +133,12 @@ mod tests {
                     minutes: 0,
                     seconds: 0,
                 }
-            ),
+            )),
             duration(b"P10MT0S")
         );
 
         assert_eq!(
-            Done(
+            Ok((
                 &[][..],
                 Duration {
                     years: 0,
@@ -151,7 +148,7 @@ mod tests {
                     minutes: 10,
                     seconds: 0,
                 }
-            ),
+            )),
             duration(b"PT10M0S")
         );
 

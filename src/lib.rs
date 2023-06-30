@@ -25,12 +25,11 @@
 
 #![cfg_attr(feature = "dev", allow(unstable_features))]
 #![cfg_attr(feature = "dev", feature(plugin))]
-#![cfg_attr(feature = "dev", plugin(clippy))]
 #![cfg_attr(feature = "bench", feature(test))]
 
 #[macro_use]
 extern crate nom;
-use nom::IResult::*;
+use nom::Err;
 
 #[macro_use]
 mod helper;
@@ -173,8 +172,9 @@ impl GedcomxDate {
 /// ```
 pub fn parse(string: &str) -> Result<GedcomxDate, String> {
     match parsers::parse(string.as_bytes()) {
-        Done(_, parsed) => Ok(parsed),
-        Error(_) => Err("Parsing error".to_string()),
-        Incomplete(_) => Err("Parsing error".to_string()),
+        Ok((_, parsed)) => Ok(parsed),
+        Err(Err::Incomplete(_)) => Err("Parsing error".to_string()),
+        Err(Err::Error(e)) => Err("Parsing error".to_string()),
+        Err(Err::Failure(_)) => Err("Parsing error".to_string()),
     }
 }

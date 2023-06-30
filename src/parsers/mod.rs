@@ -3,13 +3,13 @@ use super::{DateTimeOrDuration, GedcomxDate};
 macro_rules! empty_or(
     ($i:expr, $submac:ident!( $($args:tt)* )) => (
         if $i.len() == 0 {
-            super::super::nom::IResult::Done($i, None)
+            Ok(($i, None))
         } else {
-            match $submac!($i, $($args)*) {
-                super::super::nom::IResult::Done(i,o)     => super::super::nom::IResult::Done(i, Some(o)),
-                super::super::nom::IResult::Error(_)      => super::super::nom::IResult::Done($i, None),
-                super::super::nom::IResult::Incomplete(i) => super::super::nom::IResult::Incomplete(i)
-
+              match $submac!($i, $($args)*) {
+                Ok((i, o)) => Ok((i, Some(o))),
+                Err(super::super::nom::Err::Incomplete(i)) => Err(super::super::nom::Err::Incomplete(i)),
+                Err(super::super::nom::Err::Error(_)) => Ok(($i, None)),
+                Err(super::super::nom::Err::Failure(_)) => Ok(($i, None)),
             }
         }
     );
@@ -27,9 +27,9 @@ macro_rules! check(
         }
       }
       if failed {
-        super::super::nom::IResult::Error(super::super::nom::Err::Position(super::super::nom::ErrorKind::Custom(20),$input))
+        Err(super::super::nom::Err::Error(super::super::nom::Context::Code($input, super::super::nom::ErrorKind::Custom(20u32))))
       } else {
-        super::super::nom::IResult::Done(&b""[..], $input)
+        Ok((&b""[..], $input))
       }
     }
   );

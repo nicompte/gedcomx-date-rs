@@ -182,9 +182,6 @@ named!(pub datetime <DateTime>, do_parse!(
 
 #[cfg(test)]
 mod tests {
-
-    use nom::IResult::*;
-
     use super::super::super::{Date, Time};
     use super::{day, month, year};
     use super::{hour, minute, second};
@@ -192,23 +189,26 @@ mod tests {
 
     #[test]
     fn test_year() {
-        assert_eq!(Done(&[][..], 2015), year(b"+2015"));
-        assert_eq!(Done(&[][..], -333), year(b"-0333"));
-        assert_eq!(Done(&b"-"[..], 2015), year(b"+2015-"));
+        assert_eq!(Ok((&[][..], 2015)), year(b"+2015"));
+        assert_eq!(Ok((&[][..], -333)), year(b"-0333"));
+        assert_eq!(Ok((&b"-"[..], 2015)), year(b"+2015-"));
 
         assert!(year(b"2003").is_err());
         assert!(year(b"+abcd").is_err());
         assert!(year(b"+2a03").is_err());
 
-        assert!(year(b"+203").is_incomplete());
+        assert_eq!(
+            year(b"+203"),
+            Err(nom::Err::Incomplete(nom::Needed::Size(4)))
+        );
     }
 
     #[test]
     fn test_month() {
-        assert_eq!(Done(&[][..], 1), month(b"01"));
-        assert_eq!(Done(&[][..], 6), month(b"06"));
-        assert_eq!(Done(&[][..], 12), month(b"12"));
-        assert_eq!(Done(&b"-"[..], 12), month(b"12-"));
+        assert_eq!(Ok((&[][..], 1)), month(b"01"));
+        assert_eq!(Ok((&[][..], 6)), month(b"06"));
+        assert_eq!(Ok((&[][..], 12)), month(b"12"));
+        assert_eq!(Ok((&b"-"[..], 12)), month(b"12-"));
 
         assert!(month(b"13").is_err());
         assert!(month(b"00").is_err());
@@ -217,13 +217,13 @@ mod tests {
 
     #[test]
     fn test_day() {
-        assert_eq!(Done(&[][..], 1), day(b"01"));
-        assert_eq!(Done(&[][..], 12), day(b"12"));
-        assert_eq!(Done(&[][..], 20), day(b"20"));
-        assert_eq!(Done(&[][..], 28), day(b"28"));
-        assert_eq!(Done(&[][..], 30), day(b"30"));
-        assert_eq!(Done(&[][..], 31), day(b"31"));
-        assert_eq!(Done(&b"-"[..], 31), day(b"31-"));
+        assert_eq!(Ok((&[][..], 1)), day(b"01"));
+        assert_eq!(Ok((&[][..], 12)), day(b"12"));
+        assert_eq!(Ok((&[][..], 20)), day(b"20"));
+        assert_eq!(Ok((&[][..], 28)), day(b"28"));
+        assert_eq!(Ok((&[][..], 30)), day(b"30"));
+        assert_eq!(Ok((&[][..], 31)), day(b"31"));
+        assert_eq!(Ok((&b"-"[..], 31)), day(b"31-"));
 
         assert!(day(b"1").is_err());
         assert!(day(b"00").is_err());
@@ -233,36 +233,36 @@ mod tests {
     #[test]
     fn test_ymd() {
         assert_eq!(
-            Done(
+            Ok((
                 &[][..],
                 Date {
                     year: 1988,
                     month: Some(3),
                     day: Some(29),
                 }
-            ),
+            )),
             ymd(b"+1988-03-29")
         );
         assert_eq!(
-            Done(
+            Ok((
                 &[][..],
                 Date {
                     year: 1988,
                     month: Some(3),
                     day: None,
                 }
-            ),
+            )),
             ymd(b"+1988-03")
         );
         assert_eq!(
-            Done(
+            Ok((
                 &[][..],
                 Date {
                     year: 1988,
                     month: None,
                     day: None,
                 }
-            ),
+            )),
             ymd(b"+1988")
         );
 
@@ -273,13 +273,13 @@ mod tests {
 
     #[test]
     fn test_hour() {
-        assert_eq!(Done(&[][..], 0), hour(b"00"));
-        assert_eq!(Done(&[][..], 1), hour(b"01"));
-        assert_eq!(Done(&[][..], 6), hour(b"06"));
-        assert_eq!(Done(&[][..], 12), hour(b"12"));
-        assert_eq!(Done(&[][..], 13), hour(b"13"));
-        assert_eq!(Done(&[][..], 20), hour(b"20"));
-        assert_eq!(Done(&[][..], 24), hour(b"24"));
+        assert_eq!(Ok((&[][..], 0)), hour(b"00"));
+        assert_eq!(Ok((&[][..], 1)), hour(b"01"));
+        assert_eq!(Ok((&[][..], 6)), hour(b"06"));
+        assert_eq!(Ok((&[][..], 12)), hour(b"12"));
+        assert_eq!(Ok((&[][..], 13)), hour(b"13"));
+        assert_eq!(Ok((&[][..], 20)), hour(b"20"));
+        assert_eq!(Ok((&[][..], 24)), hour(b"24"));
 
         assert!(hour(b"25").is_err());
         assert!(hour(b"30").is_err());
@@ -288,10 +288,10 @@ mod tests {
 
     #[test]
     fn test_minute() {
-        assert_eq!(Done(&[][..], 0), minute(b"00"));
-        assert_eq!(Done(&[][..], 1), minute(b"01"));
-        assert_eq!(Done(&[][..], 30), minute(b"30"));
-        assert_eq!(Done(&[][..], 59), minute(b"59"));
+        assert_eq!(Ok((&[][..], 0)), minute(b"00"));
+        assert_eq!(Ok((&[][..], 1)), minute(b"01"));
+        assert_eq!(Ok((&[][..], 30)), minute(b"30"));
+        assert_eq!(Ok((&[][..], 59)), minute(b"59"));
 
         assert!(minute(b"60").is_err());
         assert!(minute(b"61").is_err());
@@ -300,11 +300,11 @@ mod tests {
 
     #[test]
     fn test_second() {
-        assert_eq!(Done(&[][..], 0), second(b"00"));
-        assert_eq!(Done(&[][..], 1), second(b"01"));
-        assert_eq!(Done(&[][..], 30), second(b"30"));
-        assert_eq!(Done(&[][..], 59), second(b"59"));
-        assert_eq!(Done(&[][..], 60), second(b"60"));
+        assert_eq!(Ok((&[][..], 0)), second(b"00"));
+        assert_eq!(Ok((&[][..], 1)), second(b"01"));
+        assert_eq!(Ok((&[][..], 30)), second(b"30"));
+        assert_eq!(Ok((&[][..], 59)), second(b"59"));
+        assert_eq!(Ok((&[][..], 60)), second(b"60"));
 
         assert!(second(b"61").is_err());
         assert!(second(b"ab").is_err());
@@ -313,7 +313,7 @@ mod tests {
     #[test]
     fn test_time() {
         assert_eq!(
-            Done(
+            Ok((
                 &[][..],
                 Time {
                     hours: 10,
@@ -322,11 +322,11 @@ mod tests {
                     tz_offset_hours: None,
                     tz_offset_minutes: None,
                 }
-            ),
+            )),
             parse_time(b"10")
         );
         assert_eq!(
-            Done(
+            Ok((
                 &[][..],
                 Time {
                     hours: 10,
@@ -335,11 +335,11 @@ mod tests {
                     tz_offset_hours: None,
                     tz_offset_minutes: None,
                 }
-            ),
+            )),
             parse_time(b"10:30")
         );
         assert_eq!(
-            Done(
+            Ok((
                 &[][..],
                 Time {
                     hours: 10,
@@ -348,11 +348,11 @@ mod tests {
                     tz_offset_hours: None,
                     tz_offset_minutes: None,
                 }
-            ),
+            )),
             parse_time(b"10:30:29")
         );
         assert_eq!(
-            Done(
+            Ok((
                 &b":1:01"[..],
                 Time {
                     hours: 10,
@@ -361,7 +361,7 @@ mod tests {
                     tz_offset_hours: None,
                     tz_offset_minutes: None,
                 }
-            ),
+            )),
             parse_time(b"10:1:01")
         );
 
