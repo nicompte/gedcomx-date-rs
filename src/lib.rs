@@ -23,23 +23,9 @@
 //! }
 //! ```
 
-#![cfg_attr(feature = "dev", allow(unstable_features))]
-#![cfg_attr(feature = "dev", feature(plugin))]
-#![cfg_attr(feature = "bench", feature(test))]
-
-#[macro_use]
-extern crate nom;
 use nom::Err;
 
-#[macro_use]
-mod helper;
-#[macro_use]
 mod parsers;
-mod bench;
-
-// used for benchmarks
-#[cfg(feature = "bench")]
-extern crate test;
 
 /// A date object
 #[derive(Eq, PartialEq, Debug, Copy, Clone)]
@@ -171,10 +157,16 @@ impl GedcomxDate {
 /// }
 /// ```
 pub fn parse(string: &str) -> Result<GedcomxDate, String> {
-    match parsers::parse(string.as_bytes()) {
-        Ok((_, parsed)) => Ok(parsed),
+    match parsers::parse(string) {
+        Ok((remaining, parsed)) => {
+            if remaining.is_empty() {
+                Ok(parsed)
+            } else {
+                Err("Parsing error".to_string())
+            }
+        }
         Err(Err::Incomplete(_)) => Err("Parsing error".to_string()),
-        Err(Err::Error(e)) => Err("Parsing error".to_string()),
+        Err(Err::Error(_)) => Err("Parsing error".to_string()),
         Err(Err::Failure(_)) => Err("Parsing error".to_string()),
     }
 }

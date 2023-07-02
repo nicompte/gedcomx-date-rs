@@ -1,6 +1,3 @@
-extern crate gedcomx_date;
-extern crate nom;
-
 use gedcomx_date::*;
 
 #[test]

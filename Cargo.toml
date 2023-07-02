@@ -7,11 +7,14 @@ description = "Gedcomx Date Parser"
 
 license = "MIT"
 readme = "README.md"
+edition = "2021"
 
 [dependencies]
-nom = {version = "4", features = ["verbose-errors"]}
+nom = "7"
 
-[features]
-default = []
-dev = []
-bench = []
+[dev-dependencies]
+criterion = "0.5"
+
+[[bench]]
+name = "bench"
+harness = false

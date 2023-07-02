@@ -1,45 +1,45 @@
 use super::super::Duration;
-use nom::digit;
-
+use nom::bytes::complete::tag;
+use nom::character::complete::digit1;
+use nom::combinator::{map_res, opt};
+use nom::sequence::{terminated, Tuple};
+use nom::IResult;
 use std::str;
-use std::str::FromStr;
 
-named!(
-    u32_digit<u32>,
-    map_res!(map_res!(digit, str::from_utf8), FromStr::from_str)
-);
+fn u32_digit(i: &str) -> IResult<&str, u32> {
+    map_res(digit1, |s: &str| s.parse::<u32>())(i)
+}
 
-// parse duration
-named!(pub duration <Duration>, do_parse!(
-    complete!(tag!("P")) >>
-    y: opt!(terminated!(u32_digit, tag!("Y"))) >>
-    m: opt!(terminated!(u32_digit, tag!("M"))) >>
-    d: opt!(terminated!(u32_digit, tag!("D"))) >>
-    dt: opt!(duration_time) >>
-    ({
-        let duration_time = dt.unwrap_or((0, 0, 0));
-        Duration{
+pub fn duration(i: &str) -> IResult<&str, Duration> {
+    let p = tag("P");
+    let year = opt(terminated(u32_digit, tag("Y")));
+    let month = opt(terminated(u32_digit, tag("M")));
+    let day = opt(terminated(u32_digit, tag("D")));
+
+    let (remaining, (_, y, m, d, dt)) = (p, year, month, day, opt(duration_time)).parse(i)?;
+    let duration_time = dt.unwrap_or((0, 0, 0));
+    Ok((
+        remaining,
+        Duration {
             years: y.unwrap_or(0),
             months: m.unwrap_or(0),
             days: d.unwrap_or(0),
             hours: duration_time.0,
             minutes: duration_time.1,
-            seconds: duration_time.2
-        }
-    })
-));
-
-// parse duration time
-named!(
-    duration_time<(u32, u32, u32)>,
-    dbg!(do_parse!(
-        complete!(tag!("T"))
-            >> h: opt!(terminated!(u32_digit, tag!("H")))
-            >> m: opt!(terminated!(u32_digit, tag!("M")))
-            >> s: opt!(terminated!(u32_digit, tag!("S")))
-            >> (h.unwrap_or(0), m.unwrap_or(0), s.unwrap_or(0))
+            seconds: duration_time.2,
+        },
     ))
-);
+}
+
+fn duration_time(i: &str) -> IResult<&str, (u32, u32, u32)> {
+    let t = tag("T");
+    let hour = opt(terminated(u32_digit, tag("H")));
+    let minute = opt(terminated(u32_digit, tag("M")));
+    let second = opt(terminated(u32_digit, tag("S")));
+
+    let (remaining, (_, h, m, s)) = (t, hour, minute, second).parse(i)?;
+    Ok((remaining, (h.unwrap_or(0), m.unwrap_or(0), s.unwrap_or(0))))
+}
 
 #[cfg(test)]
 mod tests {
@@ -48,23 +48,23 @@ mod tests {
 
     #[test]
     fn test_duration_time() {
-        assert_eq!(Ok((&[][..], (10, 10, 10))), duration_time(b"T10H10M10S"));
+        assert_eq!(Ok(("", (10, 10, 10))), duration_time("T10H10M10S"));
 
-        assert_eq!(Ok((&[][..], (10, 10, 0))), duration_time(b"T10H10M0S"));
+        assert_eq!(Ok(("", (10, 10, 0))), duration_time("T10H10M0S"));
 
-        assert_eq!(Ok((&[][..], (10, 0, 0))), duration_time(b"T10H0S"));
+        assert_eq!(Ok(("", (10, 0, 0))), duration_time("T10H0S"));
 
-        assert_eq!(Ok((&[][..], (0, 0, 200))), duration_time(b"T200S"));
+        assert_eq!(Ok(("", (0, 0, 200))), duration_time("T200S"));
 
-        assert!(duration_time(b"10H10M10S").is_err());
-        assert!(duration_time(b"10H10S10M").is_err());
+        assert!(duration_time("10H10M10S").is_err());
+        assert!(duration_time("10H10S10M").is_err());
     }
 
     #[test]
     fn test_duration() {
         assert_eq!(
             Ok((
-                &[][..],
+                "",
                 Duration {
                     years: 10,
                     months: 20,
@@ -74,12 +74,12 @@ mod tests {
                     seconds: 30,
                 }
             )),
-            duration(b"P10Y20M30DT10H20M30S")
+            duration("P10Y20M30DT10H20M30S")
         );
 
         assert_eq!(
             Ok((
-                &[][..],
+                "",
                 Duration {
                     years: 10,
                     months: 0,
@@ -89,12 +89,12 @@ mod tests {
                     seconds: 0,
                 }
             )),
-            duration(b"P10YT10H0S")
+            duration("P10YT10H0S")
         );
 
         assert_eq!(
             Ok((
-                &[][..],
+                "",
                 Duration {
                     years: 0,
                     months: 0,
@@ -104,12 +104,12 @@ mod tests {
                     seconds: 0,
                 }
             )),
-            duration(b"PT1000M0S")
+            duration("PT1000M0S")
         );
 
         assert_eq!(
             Ok((
-                &[][..],
+                "",
                 Duration {
                     years: 10,
                     months: 0,
@@ -119,12 +119,12 @@ mod tests {
                     seconds: 0,
                 }
             )),
-            duration(b"P10YT0S")
+            duration("P10YT0S")
         );
 
         assert_eq!(
             Ok((
-                &[][..],
+                "",
                 Duration {
                     years: 0,
                     months: 10,
@@ -134,12 +134,12 @@ mod tests {
                     seconds: 0,
                 }
             )),
-            duration(b"P10MT0S")
+            duration("P10MT0S")
         );
 
         assert_eq!(
             Ok((
-                &[][..],
+                "",
                 Duration {
                     years: 0,
                     months: 0,
@@ -149,9 +149,9 @@ mod tests {
                     seconds: 0,
                 }
             )),
-            duration(b"PT10M0S")
+            duration("PT10M0S")
         );
 
-        assert!(duration(b"YT1000M").is_err());
+        assert!(duration("YT1000M").is_err());
     }
 }

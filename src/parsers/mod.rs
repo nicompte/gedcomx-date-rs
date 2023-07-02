@@ -1,52 +1,7 @@
 use super::{DateTimeOrDuration, GedcomxDate};
-
-macro_rules! empty_or(
-    ($i:expr, $submac:ident!( $($args:tt)* )) => (
-        if $i.len() == 0 {
-            Ok(($i, None))
-        } else {
-              match $submac!($i, $($args)*) {
-                Ok((i, o)) => Ok((i, Some(o))),
-                Err(super::super::nom::Err::Incomplete(i)) => Err(super::super::nom::Err::Incomplete(i)),
-                Err(super::super::nom::Err::Error(_)) => Ok(($i, None)),
-                Err(super::super::nom::Err::Failure(_)) => Ok(($i, None)),
-            }
-        }
-    );
-);
-
-macro_rules! check(
-  ($input:expr, $submac:ident!( $($args:tt)* )) => (
-
-    {
-      let mut failed = false;
-      for idx in 0..$input.len() {
-        if !$submac!($input[idx], $($args)*) {
-            failed = true;
-            break;
-        }
-      }
-      if failed {
-        Err(super::super::nom::Err::Error(super::super::nom::Context::Code($input, super::super::nom::ErrorKind::Custom(20u32))))
-      } else {
-        Ok((&b""[..], $input))
-      }
-    }
-  );
-  ($input:expr, $f:expr) => (
-    check!($input, call!($f))
-  );
-);
-
-macro_rules! char_between(
-    ($input:expr, $min:expr, $max:expr) => (
-        {
-        fn f(c: u8) -> bool { c >= ($min as u8) && c <= ($max as u8)}
-        flat_map!($input, take!(1), check!(f))
-        }
-    );
-);
-
+use nom::branch::alt;
+use nom::bytes::complete::tag;
+use nom::combinator::map;
 mod duration;
 mod range;
 mod recurring;
@@ -55,23 +10,27 @@ mod simple;
 use self::duration::duration;
 use self::range::range;
 use self::recurring::recurring;
-use self::simple::datetime;
-use self::simple::simple_date;
-use nom::eof;
+use self::simple::{datetime, simple_date};
+use nom::IResult;
 
-named!(
-    parse_datetime<DateTimeOrDuration>,
-    do_parse!(d: datetime >> (DateTimeOrDuration::DateTime(d)))
-);
-named!(
-    parse_duration<DateTimeOrDuration>,
-    do_parse!(d: duration >> (DateTimeOrDuration::Duration(d)))
-);
+fn parse_datetime(i: &str) -> IResult<&str, DateTimeOrDuration> {
+    map(datetime, DateTimeOrDuration::DateTime)(i)
+}
 
-named!(pub datetime_or_duration <DateTimeOrDuration>, alt_complete!(parse_duration | parse_datetime));
+fn parse_duration(i: &str) -> IResult<&str, DateTimeOrDuration> {
+    map(duration, DateTimeOrDuration::Duration)(i)
+}
 
-named!(approximate<bool>, map!(tag!("A"), |_| true));
+fn datetime_or_duration(i: &str) -> IResult<&str, DateTimeOrDuration> {
+    alt((parse_duration, parse_datetime))(i)
+}
+
+fn approximate(i: &str) -> IResult<&str, bool> {
+    map(tag("A"), |_| true)(i)
+}
 
 /// main parse function
 /// parse either a recurring, a range, or a simple date
-named!(pub parse <GedcomxDate>, do_parse!( d:alt_complete!(recurring | range | simple_date) >> eof!() >> (d)));
+pub fn parse(i: &str) -> IResult<&str, GedcomxDate> {
+    alt((recurring, range, simple_date))(i)
+}
