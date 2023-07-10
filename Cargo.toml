@@ -1,6 +1,6 @@
 [package]
 name = "gedcomx_date"
-version = "0.0.2"
+version = "0.1.0"
 authors = ["Nicolas Barbotte <nicolas@barbotte.net>"]
 
 description = "Gedcomx Date Parser"
