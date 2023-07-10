@@ -1,7 +1,3 @@
-
-extern crate gedcomx_date;
-extern crate nom;
-
 use gedcomx_date::*;
 
 #[test]
@@ -25,58 +21,66 @@ fn test_year() {
     };
 
     // +YYYY
-    assert_eq!(parse("+1000").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 1000,
-                       month: None,
-                       day: None,
-                   },
-                   time: None,
-               });
+    assert_eq!(
+        parse("+1000").unwrap().get_simple_date().unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 1000,
+                month: None,
+                day: None,
+            },
+            time: None,
+        }
+    );
 
     // -YYYY
-    assert_eq!(parse("-0010").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: -10,
-                       month: None,
-                       day: None,
-                   },
-                   time: None,
-               });
+    assert_eq!(
+        parse("-0010").unwrap().get_simple_date().unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: -10,
+                month: None,
+                day: None,
+            },
+            time: None,
+        }
+    );
 
     // -YYYY
-    assert_eq!(parse("-0000").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 0,
-                       month: None,
-                       day: None,
-                   },
-                   time: None,
-               });
+    assert_eq!(
+        parse("-0000").unwrap().get_simple_date().unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 0,
+                month: None,
+                day: None,
+            },
+            time: None,
+        }
+    );
 
     // +YYYYTHH
-    assert_eq!(parse("+1000T10").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 1000,
-                       month: None,
-                       day: None,
-                   },
-                   time: Some(Time {
-                       hours: 10,
-                       minutes: None,
-                       seconds: None,
-                       tz_offset_hours: None,
-                       tz_offset_minutes: None,
-                   }),
-               });
+    assert_eq!(
+        parse("+1000T10").unwrap().get_simple_date().unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 1000,
+                month: None,
+                day: None,
+            },
+            time: Some(Time {
+                hours: 10,
+                minutes: None,
+                seconds: None,
+                tz_offset_hours: None,
+                tz_offset_minutes: None,
+            }),
+        }
+    );
     assert!(parse("+1000_10").is_err());
 }
 
@@ -88,34 +92,38 @@ fn test_month() {
     assert!(parse("+1000-13").is_err());
 
     // +YYYY-MM
-    assert_eq!(parse("+0987-04").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 987,
-                       month: Some(4),
-                       day: None,
-                   },
-                   time: None,
-               });
+    assert_eq!(
+        parse("+0987-04").unwrap().get_simple_date().unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 987,
+                month: Some(4),
+                day: None,
+            },
+            time: None,
+        }
+    );
 
     // +YYYY-MMTHH
-    assert_eq!(parse("+1000-10T10").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 1000,
-                       month: Some(10),
-                       day: None,
-                   },
-                   time: Some(Time {
-                       hours: 10,
-                       minutes: None,
-                       seconds: None,
-                       tz_offset_hours: None,
-                       tz_offset_minutes: None,
-                   }),
-               });
+    assert_eq!(
+        parse("+1000-10T10").unwrap().get_simple_date().unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 1000,
+                month: Some(10),
+                day: None,
+            },
+            time: Some(Time {
+                hours: 10,
+                minutes: None,
+                seconds: None,
+                tz_offset_hours: None,
+                tz_offset_minutes: None,
+            }),
+        }
+    );
     assert!(parse("+1000-10=01").is_err());
 }
 
@@ -128,16 +136,18 @@ fn test_day() {
     // assert!(parse(parse("+1000-04-31").is_err());
 
     // +YYYY-MM-DD
-    assert_eq!(parse("+1600-02-29").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 1600,
-                       month: Some(2),
-                       day: Some(29),
-                   },
-                   time: None,
-               });
+    assert_eq!(
+        parse("+1600-02-29").unwrap().get_simple_date().unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 1600,
+                month: Some(2),
+                day: Some(29),
+            },
+            time: None,
+        }
+    );
     assert!(parse("+1492-03-1501:02:03").is_err());
 }
 
@@ -148,22 +158,24 @@ fn test_hours() {
     assert!(parse("+1000-10-01T25").is_err());
 
     // +YYYY-MM-DDTHHZ
-    assert_eq!(parse("+0987-01-25T24Z").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 987,
-                       month: Some(1),
-                       day: Some(25),
-                   },
-                   time: Some(Time {
-                       hours: 24,
-                       minutes: None,
-                       seconds: None,
-                       tz_offset_hours: Some(0),
-                       tz_offset_minutes: Some(0),
-                   }),
-               });
+    assert_eq!(
+        parse("+0987-01-25T24Z").unwrap().get_simple_date().unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 987,
+                month: Some(1),
+                day: Some(25),
+            },
+            time: Some(Time {
+                hours: 24,
+                minutes: None,
+                seconds: None,
+                tz_offset_hours: Some(0),
+                tz_offset_minutes: Some(0),
+            }),
+        }
+    );
     assert!(parse("+1000-10-01T10|30").is_err());
 }
 
@@ -174,58 +186,73 @@ fn test_minutes() {
     assert!(parse("+1000-10-01T23:60").is_err());
 
     // +YYYY-MM-DDTHH:MM
-    assert_eq!(parse("+1000-10-01T24:15").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 1000,
-                       month: Some(10),
-                       day: Some(1),
-                   },
-                   time: Some(Time {
-                       hours: 24,
-                       minutes: Some(15),
-                       seconds: None,
-                       tz_offset_hours: None,
-                       tz_offset_minutes: None,
-                   }),
-               });
+    assert_eq!(
+        parse("+1000-10-01T24:15")
+            .unwrap()
+            .get_simple_date()
+            .unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 1000,
+                month: Some(10),
+                day: Some(1),
+            },
+            time: Some(Time {
+                hours: 24,
+                minutes: Some(15),
+                seconds: None,
+                tz_offset_hours: None,
+                tz_offset_minutes: None,
+            }),
+        }
+    );
 
     // +YYYY-MM-DDTHH:MM
-    assert_eq!(parse("+0987-01-25T23:59").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 987,
-                       month: Some(1),
-                       day: Some(25),
-                   },
-                   time: Some(Time {
-                       hours: 23,
-                       minutes: Some(59),
-                       seconds: None,
-                       tz_offset_hours: None,
-                       tz_offset_minutes: None,
-                   }),
-               });
+    assert_eq!(
+        parse("+0987-01-25T23:59")
+            .unwrap()
+            .get_simple_date()
+            .unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 987,
+                month: Some(1),
+                day: Some(25),
+            },
+            time: Some(Time {
+                hours: 23,
+                minutes: Some(59),
+                seconds: None,
+                tz_offset_hours: None,
+                tz_offset_minutes: None,
+            }),
+        }
+    );
 
     // +YYYY-MM-DDTHH:MMZ
-    assert_eq!(parse("+0987-01-25T23:59Z").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 987,
-                       month: Some(1),
-                       day: Some(25),
-                   },
-                   time: Some(Time {
-                       hours: 23,
-                       minutes: Some(59),
-                       seconds: None,
-                       tz_offset_hours: Some(0),
-                       tz_offset_minutes: Some(0),
-                   }),
-               });
+    assert_eq!(
+        parse("+0987-01-25T23:59Z")
+            .unwrap()
+            .get_simple_date()
+            .unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 987,
+                month: Some(1),
+                day: Some(25),
+            },
+            time: Some(Time {
+                hours: 23,
+                minutes: Some(59),
+                seconds: None,
+                tz_offset_hours: Some(0),
+                tz_offset_minutes: Some(0),
+            }),
+        }
+    );
     assert!(parse("+1000-10-01T10:30|15").is_err());
 }
 
@@ -239,61 +266,76 @@ fn test_seconds() {
     // assert!(parse("+1000-10-01T24:00:01").is_err());
 
     // +YYYY-MM-DDTHH:MM:SS
-    assert_eq!(parse("+0987-01-25T23:59:59").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 987,
-                       month: Some(1),
-                       day: Some(25),
-                   },
-                   time: Some(Time {
-                       hours: 23,
-                       minutes: Some(59),
-                       seconds: Some(59),
-                       tz_offset_hours: None,
-                       tz_offset_minutes: None,
-                   }),
-               });
+    assert_eq!(
+        parse("+0987-01-25T23:59:59")
+            .unwrap()
+            .get_simple_date()
+            .unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 987,
+                month: Some(1),
+                day: Some(25),
+            },
+            time: Some(Time {
+                hours: 23,
+                minutes: Some(59),
+                seconds: Some(59),
+                tz_offset_hours: None,
+                tz_offset_minutes: None,
+            }),
+        }
+    );
 
     // +YYYY-MM-DDTHH:MM:SSZ
-    assert_eq!(parse("+0987-01-25T23:59:59Z").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 987,
-                       month: Some(1),
-                       day: Some(25),
-                   },
-                   time: Some(Time {
-                       hours: 23,
-                       minutes: Some(59),
-                       seconds: Some(59),
-                       tz_offset_hours: Some(0),
-                       tz_offset_minutes: Some(0),
-                   }),
-               });
+    assert_eq!(
+        parse("+0987-01-25T23:59:59Z")
+            .unwrap()
+            .get_simple_date()
+            .unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 987,
+                month: Some(1),
+                day: Some(25),
+            },
+            time: Some(Time {
+                hours: 23,
+                minutes: Some(59),
+                seconds: Some(59),
+                tz_offset_hours: Some(0),
+                tz_offset_minutes: Some(0),
+            }),
+        }
+    );
 }
 
 #[test]
 fn test_tzhours() {
     // +YYYY-MM-DDTHH:MMZ
-    assert_eq!(parse("+1000-01-01T23:15Z").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 1000,
-                       month: Some(1),
-                       day: Some(1),
-                   },
-                   time: Some(Time {
-                       hours: 23,
-                       minutes: Some(15),
-                       seconds: None,
-                       tz_offset_hours: Some(0),
-                       tz_offset_minutes: Some(0),
-                   }),
-               });
+    assert_eq!(
+        parse("+1000-01-01T23:15Z")
+            .unwrap()
+            .get_simple_date()
+            .unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 1000,
+                month: Some(1),
+                day: Some(1),
+            },
+            time: Some(Time {
+                hours: 23,
+                minutes: Some(15),
+                seconds: None,
+                tz_offset_hours: Some(0),
+                tz_offset_minutes: Some(0),
+            }),
+        }
+    );
 
     assert!(parse("+1000-10-01T24:00:00ZSTUFF").is_err());
     assert!(parse("+1000-10-01T24:00:00-1").is_err());
@@ -301,58 +343,73 @@ fn test_tzhours() {
     assert!(parse("+1000-01-11T10:15:10+1o").is_err());
 
     // +YYYY-MM-DDTHH:MM+HH
-    assert_eq!(parse("+1000-01-01T23:15+15").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 1000,
-                       month: Some(1),
-                       day: Some(1),
-                   },
-                   time: Some(Time {
-                       hours: 23,
-                       minutes: Some(15),
-                       seconds: None,
-                       tz_offset_hours: Some(15),
-                       tz_offset_minutes: Some(0),
-                   }),
-               });
+    assert_eq!(
+        parse("+1000-01-01T23:15+15")
+            .unwrap()
+            .get_simple_date()
+            .unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 1000,
+                month: Some(1),
+                day: Some(1),
+            },
+            time: Some(Time {
+                hours: 23,
+                minutes: Some(15),
+                seconds: None,
+                tz_offset_hours: Some(15),
+                tz_offset_minutes: Some(0),
+            }),
+        }
+    );
 
     // +YYYY-MM-DDTHH:MM-HH
-    assert_eq!(parse("+1000-01-01T23:15-02").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 1000,
-                       month: Some(1),
-                       day: Some(1),
-                   },
-                   time: Some(Time {
-                       hours: 23,
-                       minutes: Some(15),
-                       seconds: None,
-                       tz_offset_hours: Some(-2),
-                       tz_offset_minutes: Some(0),
-                   }),
-               });
+    assert_eq!(
+        parse("+1000-01-01T23:15-02")
+            .unwrap()
+            .get_simple_date()
+            .unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 1000,
+                month: Some(1),
+                day: Some(1),
+            },
+            time: Some(Time {
+                hours: 23,
+                minutes: Some(15),
+                seconds: None,
+                tz_offset_hours: Some(-2),
+                tz_offset_minutes: Some(0),
+            }),
+        }
+    );
 
     // +YYYY-MM-DDTHH:MM-HH
-    assert_eq!(parse("+1000-01-01T23:15-00").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 1000,
-                       month: Some(1),
-                       day: Some(1),
-                   },
-                   time: Some(Time {
-                       hours: 23,
-                       minutes: Some(15),
-                       seconds: None,
-                       tz_offset_hours: Some(0),
-                       tz_offset_minutes: Some(0),
-                   }),
-               });
+    assert_eq!(
+        parse("+1000-01-01T23:15-00")
+            .unwrap()
+            .get_simple_date()
+            .unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 1000,
+                month: Some(1),
+                day: Some(1),
+            },
+            time: Some(Time {
+                hours: 23,
+                minutes: Some(15),
+                seconds: None,
+                tz_offset_hours: Some(0),
+                tz_offset_minutes: Some(0),
+            }),
+        }
+    );
 
     assert!(parse("+1000-10-01T10:30:15-06-30").is_err());
 }
@@ -365,22 +422,27 @@ fn test_tzminutes() {
 
     // +YYYY-MM-DDTHH:MM-HH:MM
     // TODO: check minutes offset: -30?
-    assert_eq!(parse("+1000-01-01T23:15-00:30").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: false,
-                   date: Date {
-                       year: 1000,
-                       month: Some(1),
-                       day: Some(1),
-                   },
-                   time: Some(Time {
-                       hours: 23,
-                       minutes: Some(15),
-                       seconds: None,
-                       tz_offset_hours: Some(0),
-                       tz_offset_minutes: Some(-30),
-                   }),
-               });
+    assert_eq!(
+        parse("+1000-01-01T23:15-00:30")
+            .unwrap()
+            .get_simple_date()
+            .unwrap(),
+        Simple {
+            approximate: false,
+            date: Date {
+                year: 1000,
+                month: Some(1),
+                day: Some(1),
+            },
+            time: Some(Time {
+                hours: 23,
+                minutes: Some(15),
+                seconds: None,
+                tz_offset_hours: Some(0),
+                tz_offset_minutes: Some(-30),
+            }),
+        }
+    );
 }
 
 #[test]
@@ -388,32 +450,39 @@ fn test_approximate() {
     assert!(parse("A1000").is_err());
 
     // A+YYYY-MM-DDTHHZ
-    assert_eq!(parse("A+0987-01-25T24Z").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: true,
-                   date: Date {
-                       year: 987,
-                       month: Some(1),
-                       day: Some(25),
-                   },
-                   time: Some(Time {
-                       hours: 24,
-                       minutes: None,
-                       seconds: None,
-                       tz_offset_hours: Some(0),
-                       tz_offset_minutes: Some(0),
-                   }),
-               });
+    assert_eq!(
+        parse("A+0987-01-25T24Z")
+            .unwrap()
+            .get_simple_date()
+            .unwrap(),
+        Simple {
+            approximate: true,
+            date: Date {
+                year: 987,
+                month: Some(1),
+                day: Some(25),
+            },
+            time: Some(Time {
+                hours: 24,
+                minutes: None,
+                seconds: None,
+                tz_offset_hours: Some(0),
+                tz_offset_minutes: Some(0),
+            }),
+        }
+    );
 
     // A+YYYY
-    assert_eq!(parse("A+0987").unwrap().get_simple_date().unwrap(),
-               Simple {
-                   approximate: true,
-                   date: Date {
-                       year: 987,
-                       month: None,
-                       day: None,
-                   },
-                   time: None,
-               });
+    assert_eq!(
+        parse("A+0987").unwrap().get_simple_date().unwrap(),
+        Simple {
+            approximate: true,
+            date: Date {
+                year: 987,
+                month: None,
+                day: None,
+            },
+            time: None,
+        }
+    );
 }

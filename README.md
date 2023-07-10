@@ -38,8 +38,6 @@ gedcomx_date = "0.0.1"
 ```
 
 ```rust
-extern crate gedcomx_date;
-
 fn main() {
     let date = gedcomx_date::parse("+1988-03-29T03:19+01");
     print!("{:?}", date);

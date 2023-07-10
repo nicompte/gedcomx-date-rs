@@ -7,13 +7,14 @@ description = "Gedcomx Date Parser"
 
 license = "MIT"
 readme = "README.md"
+edition = "2021"
 
 [dependencies]
-nom = "1.2.0"
+nom = "7"
 
-clippy = {version = "~0.0.46", optional = true}
+[dev-dependencies]
+criterion = "0.5"
 
-[features]
-default = []
-dev = ["clippy"]
-bench = []
+[[bench]]
+name = "bench"
+harness = false
