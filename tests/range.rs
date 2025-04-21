@@ -152,3 +152,61 @@ fn test_no_date_approximate() {
     assert!(parse("AA+1000/A+2000-10-01").is_err());
     assert!(parse("AA+1000/+2000-10-01").is_err());
 }
+
+#[test]
+fn test_duration_roundtrip() {
+    let date_strs = &[
+        "+1000/P1Y2M3DT4H5M6S", // +YYYY/P...
+        "-1000/P2MT14H",
+    ];
+
+    for date_str in date_strs {
+        let date = parse(date_str).unwrap();
+
+        assert_eq!(date.to_string(), *date_str);
+    }
+}
+
+#[test]
+fn test_closed_roundtrip() {
+    let date_strs = &["+1000/+2000-10-01"];
+
+    for date_str in date_strs {
+        let date = parse(date_str).unwrap();
+
+        assert_eq!(date.to_string(), *date_str);
+    }
+}
+
+#[test]
+fn test_open_start_roundtrip() {
+    let date_strs = &["/+2000-10-01"];
+
+    for date_str in date_strs {
+        let date = parse(date_str).unwrap();
+
+        assert_eq!(date.to_string(), *date_str);
+    }
+}
+
+#[test]
+fn test_open_end_roundtrip() {
+    let date_strs = &["+1000/"];
+
+    for date_str in date_strs {
+        let date = parse(date_str).unwrap();
+
+        assert_eq!(date.to_string(), *date_str);
+    }
+}
+
+#[test]
+fn test_approximate_roundtrip() {
+    let date_strs = &["A+1000/+2000-10-01"];
+
+    for date_str in date_strs {
+        let date = parse(date_str).unwrap();
+
+        assert_eq!(date.to_string(), *date_str);
+    }
+}

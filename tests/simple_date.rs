@@ -486,3 +486,128 @@ fn test_approximate() {
         }
     );
 }
+
+#[test]
+fn test_year_roundtrip() {
+    let date_strs = &[
+        "+1432", // +YYYY
+        "-0092", // -YYYY
+    ];
+
+    for date_str in date_strs {
+        let date = parse(date_str).unwrap();
+
+        assert_eq!(date.to_string(), *date_str);
+    }
+}
+
+#[test]
+fn test_month_roundtrip() {
+    let date_strs = &[
+        "+1432-02", // +YYYY-MM
+        "-1392-10", // -YYYY-MM
+    ];
+    for date_str in date_strs {
+        let date = parse(date_str).unwrap();
+
+        assert_eq!(date.to_string(), *date_str);
+    }
+}
+
+#[test]
+fn test_day_roundtrip() {
+    let date_strs = &[
+        "+1432-02-28", // +YYYY-MM-DD
+        "-1392-09-13", // -YYYY-MM-DD
+    ];
+
+    for date_str in date_strs {
+        let date = parse(date_str).unwrap();
+
+        assert_eq!(date.to_string(), *date_str);
+    }
+}
+
+#[test]
+fn test_hours_roundtrip() {
+    let date_strs = &[
+        "+1432-02-28T02",  // +YYYY-MM-DDTHH
+        "-1392-09-13T19",  // -YYYY-MM-DDTHH
+        "+1432-02-28T02Z", // +YYYY-MM-DDTHHZ (UTC)
+        "-1392-09-13T19Z", // -YYYY-MM-DDTHHZ (UTC)
+    ];
+
+    for date_str in date_strs {
+        let date = parse(date_str).unwrap();
+
+        assert_eq!(date.to_string(), *date_str);
+    }
+}
+
+#[test]
+fn test_tzhours_roundtrip() {
+    let date_strs = &[
+        "+1432-02-28T02-07", // +YYYY-MM-DDTHH-HH
+        "+1432-02-28T02+07", // +YYYY-MM-DDTHH+HH
+    ];
+    for date_str in date_strs {
+        let date = parse(date_str).unwrap();
+
+        assert_eq!(date.to_string(), *date_str);
+    }
+}
+
+#[test]
+fn test_tzminutes_roundtrip() {
+    let date_strs = &[
+        "-1392-09-13T19-03:10", // -YYYY-MM-DDTHH-HH:MM
+        "-1392-09-13T19+03:10", // -YYYY-MM-DDTHH+HH:MM
+    ];
+
+    for date_str in date_strs {
+        let date = parse(date_str).unwrap();
+
+        assert_eq!(date.to_string(), *date_str);
+    }
+}
+
+#[test]
+fn test_minutes_roundtrip() {
+    let date_strs = &[
+        "+1988-03-29T03:19",  // +YYYY-MM-DDTHH:MM
+        "-1988-03-29T03:19",  // -YYYY-MM-DDTHH:MM
+        "+1988-03-29T03:19Z", // +YYYY-MM-DDTHH:MMZ
+    ];
+
+    for date_str in date_strs {
+        let date = parse(date_str).unwrap();
+
+        assert_eq!(date.to_string(), *date_str);
+    }
+}
+
+#[test]
+fn test_seconds_roundtrip() {
+    let date_strs = &[
+        "+1988-03-29T03:19:59", // +YYYY-MM-DDTHH:MM:SS
+    ];
+
+    for date_str in date_strs {
+        let date = parse(date_str).unwrap();
+
+        assert_eq!(date.to_string(), *date_str);
+    }
+}
+
+#[test]
+fn test_approximate_roundtrip() {
+    let date_strs = &[
+        "A+1988-03-29T03:19:59+09:43", // A+YYYY-MM-DDTHH:MM:SS+HH:MM
+    ];
+
+    for date_str in date_strs {
+        let date = parse(date_str).unwrap();
+
+        assert_eq!(date.to_string(), *date_str);
+    }
+}
