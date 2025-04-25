@@ -301,7 +301,6 @@ impl std::fmt::Display for Time {
                 f.write_fmt(format_args!("{:02}", tz_offset_hours))?;
             }
             (Some(tz_offset_hours), Some(tz_offset_minutes)) => {
-                dbg!(&tz_offset_hours, &tz_offset_minutes);
                 if tz_offset_hours == 0 && tz_offset_minutes == 0 {
                     f.write_str("Z")?;
                 } else {
