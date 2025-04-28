@@ -23,6 +23,8 @@
 //! }
 //! ```
 
+use std::fmt::{Debug, Display};
+
 use nom::Err;
 
 mod parsers;
@@ -168,5 +170,152 @@ pub fn parse(string: &str) -> Result<GedcomxDate, String> {
         Err(Err::Incomplete(_)) => Err("Parsing error".to_string()),
         Err(Err::Error(_)) => Err("Parsing error".to_string()),
         Err(Err::Failure(_)) => Err("Parsing error".to_string()),
+    }
+}
+
+impl std::fmt::Display for GedcomxDate {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        use std::fmt::Display;
+        match self {
+            GedcomxDate::Simple(simple) => Display::fmt(simple, f),
+            GedcomxDate::Range(range) => Display::fmt(range, f),
+            GedcomxDate::Recurring(recurring) => Display::fmt(recurring, f),
+        }
+    }
+}
+
+impl std::fmt::Display for Simple {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        if self.approximate {
+            f.write_str("A")?;
+        }
+        f.write_fmt(format_args!("{}", self.date))?;
+
+        if let Some(time) = self.time {
+            f.write_fmt(format_args!("T{}", time))?;
+        }
+
+        Ok(())
+    }
+}
+
+impl std::fmt::Display for Range {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.approximate {
+            f.write_str("A")?;
+        }
+        if let Some(start) = self.start {
+            f.write_fmt(format_args!("{}", start))?;
+        }
+        f.write_str("/")?;
+        if let Some(end) = self.end {
+            f.write_fmt(format_args!("{}", end))?;
+        }
+        Ok(())
+    }
+}
+
+impl std::fmt::Display for Recurring {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("R")?;
+        if let Some(count) = self.count {
+            f.write_fmt(format_args!("{}", count))?;
+        }
+        f.write_fmt(format_args!("/{}", self.start))?;
+        f.write_fmt(format_args!("/{}", self.end))?;
+        Ok(())
+    }
+}
+
+impl std::fmt::Display for DateTime {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("{}", self.date))?;
+        if let Some(time) = self.time {
+            f.write_fmt(format_args!("T{}", time))?;
+        }
+        Ok(())
+    }
+}
+
+impl std::fmt::Display for DateTimeOrDuration {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::DateTime(datetime) => Display::fmt(datetime, f),
+            Self::Duration(duration) => Display::fmt(duration, f),
+        }
+    }
+}
+
+impl std::fmt::Display for Date {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(if self.year < 0 { "-" } else { "+" })?;
+        f.write_fmt(format_args!("{:04}", self.year.abs()))?;
+        if let Some(month) = self.month {
+            f.write_fmt(format_args!("-{:02}", month))?;
+            if let Some(day) = self.day {
+                f.write_fmt(format_args!("-{:02}", day))?;
+            }
+        }
+        Ok(())
+    }
+}
+
+impl std::fmt::Display for Duration {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("P")?;
+        if self.years > 0 {
+            f.write_fmt(format_args!("{}Y", self.years))?;
+        }
+        if self.months > 0 {
+            f.write_fmt(format_args!("{}M", self.months))?;
+        }
+        if self.days > 0 {
+            f.write_fmt(format_args!("{}D", self.days))?;
+        }
+        if self.hours > 0 || self.minutes > 0 || self.seconds > 0 {
+            f.write_str("T")?;
+        }
+        if self.hours > 0 {
+            f.write_fmt(format_args!("{}H", self.hours))?;
+        }
+        if self.minutes > 0 {
+            f.write_fmt(format_args!("{}M", self.minutes))?;
+        }
+        if self.seconds > 0 {
+            f.write_fmt(format_args!("{}S", self.seconds))?;
+        }
+        Ok(())
+    }
+}
+impl std::fmt::Display for Time {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("{:02}", self.hours))?;
+        if let Some(minutes) = self.minutes {
+            f.write_fmt(format_args!(":{:02}", minutes))?;
+        }
+        if let Some(seconds) = self.seconds {
+            f.write_fmt(format_args!(":{:02}", seconds))?;
+        }
+        match (self.tz_offset_hours, self.tz_offset_minutes) {
+            (Some(tz_offset_hours), None) => {
+                f.write_fmt(format_args!("{:02}", tz_offset_hours))?;
+            }
+            (Some(tz_offset_hours), Some(tz_offset_minutes)) => {
+                if tz_offset_hours == 0 && tz_offset_minutes == 0 {
+                    f.write_str("Z")?;
+                } else {
+                    f.write_fmt(format_args!(
+                        "{}{:02}",
+                        if tz_offset_hours < 0 { "-" } else { "+" },
+                        tz_offset_hours.abs()
+                    ))?;
+                    if tz_offset_minutes != 0 {
+                        f.write_fmt(format_args!(":{:02}", tz_offset_minutes.abs()))?;
+                    }
+                }
+            }
+            _ => {}
+        }
+        Ok(())
     }
 }
